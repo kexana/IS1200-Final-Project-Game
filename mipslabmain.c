@@ -55,10 +55,23 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	display_init();
-	display_string(0, "KTH/ICT lab");
-	display_string(1, "in Computer");
-	display_string(2, "Engineering");
-	display_string(3, "Welcome!");
+	display_string(0, "theq");
+	display_string(1, "uick");
+	display_string(2, "brow");
+	display_string(3, "nfox");
+	display_string(4, "jump");
+	display_string(5, "sove");
+	display_string(6, "rthe");
+	display_string(7, "lazy");
+	display_string(8, "dog");
+	display_string(9, "THEQ");
+	display_string(10, "UICK");
+	display_string(11, "BROW");
+	display_string(12, "NFOX");
+	display_string(13, "JUMP");
+	display_string(14, "SOVE");
+	display_string(15, "RTHE");
+	display_string(16, "LAZY");
 	display_update();
 	
 	display_image(96, icon);

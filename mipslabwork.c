@@ -34,8 +34,8 @@ void user_isr( void )
 		{
 			timeoutcount = 0;
 			time2string( textstring, mytime );
-			display_string( 3, textstring );
-			display_update();
+			//display_string( 3, textstring );
+			//display_update();
 			tick( &mytime );
 		}
 	}else if(IFS(0) & 0x0800){
@@ -51,7 +51,7 @@ void user_isr( void )
 void labinit( void )
 {
  	prime = nextprime( prime );
-	display_string( 0, itoaconv( prime ) );
+	//display_string( 0, itoaconv( prime ) );
 	display_update();
 
 	TMR2 = 0;
@@ -82,7 +82,7 @@ void labinit( void )
 /* This function is called repetitively from the main program */
 void labwork( void ) {
 	prime = nextprime( prime );
-	display_string( 0, itoaconv( prime ) );
+	//display_string( 0, itoaconv( prime ) );
 	display_update();
-	display_image(96, icon);
+	//display_image(96, icon);
 }

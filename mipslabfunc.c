@@ -128,17 +128,18 @@ void display_init(void) {
 
 void display_string(int line, char *s) {
 	int i;
-	if(line < 0 || line >= 4)
+	if(line < 0 || line >= 16)
 		return;
-	if(!s)
+  line = 16 - line - 1;
+  if(!s)
 		return;
 	
-	for(i = 0; i < 16; i++)
+	for(i = 0; i < 4; i++)
 		if(*s) {
-			textbuffer[line][i] = *s;
+			textbuffer[i][line] = *s;
 			s++;
 		} else
-			textbuffer[line][i] = ' ';
+			textbuffer[i][line] = ' ';
 }
 
 void display_image(int x, const uint8_t *data) {
@@ -180,7 +181,7 @@ void display_update(void) {
 			
 			for(k = 0; k < 8; k++)
 				spi_send_recv(font[c*8 + k]);
-		}
+    }
 	}
 }
 
@@ -322,3 +323,6 @@ char * itoaconv( int num )
    * we must add 1 in order to return a pointer to the first occupied position. */
   return( &itoa_buffer[ i + 1 ] );
 }
+
+
+
