@@ -1,0 +1,16 @@
+Splitting up the tasks:
+-do backgrounds --Ben
+-do font bitmaps --Deo
+-do main menu screen and stuff --Ben (play, multipl, highscore list)
+-do interrupts, decide on interrupt priorities --Ben
+-do an update_display() - i wanna see score increase, coins, whatever //together on sunday
+-do main character cube --BEN
+-do player movements (still cube, move up-down, mirrors bg) --BEN
+-do generating trains --Deo
+-do coin generation --Deo
+-do collision-detection (matrix having stuff)  //together tuesday afternoon
+-do sprites --Deo
+-do speedup, level increasement over time
+-do UART multipl. //by friday 
+
+-do the rest, playtesting, optional stuffs whatevs
