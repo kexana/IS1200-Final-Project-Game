@@ -10,7 +10,7 @@
 /* Declare display-related functions from mipslabfunc.c */
 void display_image(int x, const uint8_t *data);
 void display_init(void);
-void display_string(int line, char *s);
+void display_string(int line, char *s, char inv); //new inversion parameter added by Benedek
 void display_update(void);
 uint8_t spi_send_recv(uint8_t data);
 
@@ -42,6 +42,9 @@ extern const uint8_t const icon[128];
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
 
+/* Declare text inverter for display output to decide whether to print on black or white background */
+extern char textinverter[4][16];
+
 /* Declare functions written by students.
    Note: Since we declare these functions here,
    students must define their functions with the exact types
@@ -53,3 +56,22 @@ void time2string( char *, int );
 int getbtns(void);
 int getsw(void);
 void enable_interrupt(void);
+
+
+
+//new function declarations for the project
+/*displays the pixelmap on the display, and nothing else*/
+void display_upgrade(void);
+
+/*display data all clear, also pixelmap*/
+void display_clear( void );
+
+/*bit map of the whole display, each pixel is one bit*/
+extern char pxlmap[4][128];
+/*bit map of the whole display, each pixel is the least significant bit of the corresponding char*/
+extern char canvas[32][128];
+
+extern char gamestate;
+
+void menu(void);
+void highscores(void);

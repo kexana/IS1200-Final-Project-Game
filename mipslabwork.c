@@ -22,6 +22,8 @@ int timeoutcount = 0;
 
 char textstring[] = "text, more text, and even more text!";
 
+char buttonmap = 0;
+
 /* Interrupt Service Routine */
 void user_isr( void )
 {
@@ -29,13 +31,16 @@ void user_isr( void )
 	if(IFS(0)&0x100){
 		timeoutcount++;
 		IFSCLR(0) = 0x100;
+	 	buttonmap = getbtns();
+	 	display_upgrade();
 
-		if (timeoutcount==10)
+		if (timeoutcount==10)		//fps setter
 		{
 			timeoutcount = 0;
+			
 			time2string( textstring, mytime );
-			//display_string( 3, textstring );
-			//display_update();
+			display_string( 15 , textstring , 0 );
+			display_upgrade();
 			tick( &mytime );
 		}
 	}else if(IFS(0) & 0x0800){
@@ -81,8 +86,86 @@ void labinit( void )
 
 /* This function is called repetitively from the main program */
 void labwork( void ) {
-	prime = nextprime( prime );
-	//display_string( 0, itoaconv( prime ) );
-	display_update();
-	//display_image(96, icon);
+	if(gamestate == 0) menu();
+	if(gamestate == 1) ;
+	if(gamestate == 2) ;
+	if(gamestate == 8) highscores();
+}
+
+void menu( void ){
+	char selector = 0;
+	const int menuOptions = 3;	//number of options
+	char txtSelect[menuOptions];	//
+	
+	char c[3];
+	display_clear();
+	pxlmap[2][9] = 0xff;
+	pxlmap[2][10] = 0x81;
+	pxlmap[2][11] = 0x81;
+	pxlmap[2][12] = 0x81;
+	pxlmap[2][13] = 0x81;
+	pxlmap[2][14] = 0x81;
+	pxlmap[2][15] = 0x81;
+	pxlmap[2][16] = 0xff;
+	while(1){
+		if(gamestate != 0) return;
+		int j=0;
+		for(j = 0; j<menuOptions; j++){
+			if(j == selector) txtSelect[j] = 0xf;
+			else txtSelect[j] = 0x0;
+		}
+		
+		if (buttonmap == 0b100) //means down
+		{
+			if( selector < menuOptions -1) selector++;
+			buttonmap = 0;
+		}
+		if (buttonmap == 0b010) //means up
+		{
+			if( selector > 0 ) selector--;
+		 	buttonmap = 0;
+		}
+		if (buttonmap == 0b001)  //means select
+		{
+			if( selector == menuOptions-1 ) //if we are selecting hall of fame
+			{
+				gamestate = 8;
+			}
+		}
+		int i=0;
+		for(i = 0; i<3; i++){
+			c[i] =  ( ( buttonmap >> 2-i ) &0b1 ) + 48;
+		} 
+
+		display_string(0, c, 0 );
+		display_string(3, "PLAY", 0);
+		display_string(4, " 1p ", txtSelect[0]);
+		display_string(5, " 2p ", txtSelect[1]);
+		display_string(8, "Hall", txtSelect[2]);
+		display_string(9, " of ", txtSelect[2]); 
+		display_string(10, "fame", txtSelect[2]);
+		//display_update();
+	}
+}
+
+void highscores( void ){
+	display_clear();
+	buttonmap = 0;
+	pxlmap[2][9] = 0x18;
+	pxlmap[2][10] = 0x24;
+	pxlmap[2][11] = 0x42;
+	pxlmap[2][12] = 0x81;
+	pxlmap[2][13] = 0x81;
+	pxlmap[2][14] = 0x42;
+	pxlmap[2][15] = 0x24;
+	pxlmap[2][16] = 0x18;
+	while(1){
+		if(gamestate != 8) return;
+		display_string(5, " hS", 0);
+		if (buttonmap == 0b001)  //means select
+		{
+			gamestate = 0;
+		}
+	}
+	
 }

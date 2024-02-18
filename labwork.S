@@ -99,7 +99,7 @@ time2string:
 	
 	seq 	$t7, $0, $a0
 	
-	sb	$v0,3($s1)
+	sb	$v0,2($s1)
 	
 	andi	$a0, $a1, 0x000f 
 	jal 	hexasc
@@ -107,9 +107,9 @@ time2string:
 	
 	seq 	$t6, $0, $a0
 	
-	sb	$v0,4($s1)
+	sb	$v0,3($s1)
 	
-	sb 	$zero, 5($s1)
+	sb 	$zero, 4($s1)
 	
 	seq	$t7, $t6, $t7
 	bne	$t7, $1, dontPrintx

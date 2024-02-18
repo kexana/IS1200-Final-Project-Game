@@ -9,6 +9,12 @@
 #include "mipslab.h"  /* Declatations for these labs */
 
 char textbuffer[4][16];
+char textinverter[4][16]; //a single bit for each char responsible for checking whether the following text is inverted or not
+char pxlmap[4][128];
+char gamestate;
+
+char canvas[32][128];
+
 
 const uint8_t const font[] = {
 	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 

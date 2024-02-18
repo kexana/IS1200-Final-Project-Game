@@ -55,13 +55,26 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	display_init();
-	display_string(0, "theq");
-	display_string(1, "uick");
-	display_string(2, "brow");
-	display_string(3, "nfox");
-	display_string(4, "jump");
-	display_string(5, "sove");
-	display_string(6, "rthe");
+
+	pxlmap[1][2] = 0xff;
+	pxlmap[1][3] = 0xff;
+	pxlmap[1][4] = 0xff;
+	pxlmap[1][5] = 0xff;
+	pxlmap[1][6] = 0xff;
+	pxlmap[1][7] = 0xff;
+	canvas[0][0]=0x00;
+	
+
+	//display_image(96, icon);
+
+
+	display_string(14, "theq",0);
+	/*display_string(1, "uick",0);
+	display_string(2, "brow",0);
+	display_string(3, "nfox",0);
+	display_string(4, "jump",0);
+	display_string(5, "sove",0);*/
+	/*display_string(6, "rthe");
 	display_string(7, "lazy");
 	display_string(8, "dog");
 	display_string(9, "THEQ");
@@ -71,16 +84,17 @@ int main(void) {
 	display_string(13, "JUMP");
 	display_string(14, "SOVE");
 	display_string(15, "RTHE");
-	display_string(16, "LAZY");
+	display_string(16, "LAZY");*/
 	display_update();
+	display_clear();
 	
-	display_image(96, icon);
 	
 	labinit(); /* Do any lab-specific initialization */
 
 	while( 1 )
 	{
 	  labwork(); /* Do lab-specific things again and again */
+	  
 	}
 	return 0;
 }

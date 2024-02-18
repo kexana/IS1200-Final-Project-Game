@@ -82,8 +82,8 @@ void tick( unsigned int * timep )
 */   
 void display_debug( volatile int * const addr )
 {
-  display_string( 1, "Addr" );
-  display_string( 2, "Data" );
+  display_string( 1, "Addr" , 0b0000);
+  display_string( 2, "Data" , 0b0000);
   num32asc( &textbuffer[1][6], (int) addr );
   num32asc( &textbuffer[2][6], *addr );
   display_update();
@@ -126,20 +126,36 @@ void display_init(void) {
 	spi_send_recv(0xAF);
 }
 
-void display_string(int line, char *s) {
-	int i;
-	if(line < 0 || line >= 16)
+void display_string(int line, char *s, char inv) {
+	int i; int l;
+	if(line < 0 || line >= 16) //change from base, for the vertical layout of text
 		return;
   line = 16 - line - 1;
   if(!s)
 		return;
 	
+  //3rd input is an inverter charachter, 4 least significant bits decide if the char to print is
+  //inverted or not, e.g. 0b00001100 means the first two chars to print will be inverted
+  for(l=0; l<4; l++)   
+    textinverter[l][line] = 0b0001 & (inv>>3-l);
+  
+  
 	for(i = 0; i < 4; i++)
 		if(*s) {
-			textbuffer[i][line] = *s;
+			textbuffer[i][line] = *s; //goes through the string setting each character the right place for display_update
+      int k; int j; char verted = (inv >> (3-i) ) & 0b1;
+      for(k = 0; k < 8; k++)
+				/*if(!verted) pxlmap[i][line*8 + k] = (font[*s * 8 + k]);
+        else pxlmap[i][line*8 + k] = (~font[*s * 8 + k]);*/
+        for(j=0; j<8; j++){
+          if(!verted) canvas[i*8+j][line*8 + k] = (font[*s * 8 + k])>>j;
+        else canvas[i*8+j][line*8 + k] = (~font[*s * 8 + k])>>j;
+        }
+
 			s++;
 		} else
 			textbuffer[i][line] = ' ';
+
 }
 
 void display_image(int x, const uint8_t *data) {
@@ -164,6 +180,7 @@ void display_image(int x, const uint8_t *data) {
 void display_update(void) {
 	int i, j, k;
 	int c;
+  char inv; //inverter
 	for(i = 0; i < 4; i++) {
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
 		spi_send_recv(0x22);
@@ -174,16 +191,20 @@ void display_update(void) {
 		
 		DISPLAY_CHANGE_TO_DATA_MODE;
 		
+    
 		for(j = 0; j < 16; j++) {
 			c = textbuffer[i][j];
+      inv = textinverter[i][j];
 			if(c & 0x80)
 				continue;
 			
 			for(k = 0; k < 8; k++)
-				spi_send_recv(font[c*8 + k]);
+				if(!inv) spi_send_recv(font[c*8 + k]);
+        else spi_send_recv(~font[c*8 + k]);
     }
+    
 	}
-}
+} 
 
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
@@ -324,5 +345,46 @@ char * itoaconv( int num )
   return( &itoa_buffer[ i + 1 ] );
 }
 
+
+
+//new functions for the project
+
+void display_upgrade(void){
+  int i, j, k;
+	int c;
+  char inv; //inverter
+  char data;
+	for(i = 0; i < 4; i++) {
+		DISPLAY_CHANGE_TO_COMMAND_MODE;
+
+		spi_send_recv(0x22);
+		spi_send_recv(i);
+		
+		spi_send_recv(0 & 0xF);
+		spi_send_recv(0x10 | (0x0 & 0xF));
+		
+		DISPLAY_CHANGE_TO_DATA_MODE;
+		
+    for(j = 0; j < 128; j++){
+      //spi_send_recv(pxlmap[i][j]);
+      data = 0;
+      for(k=0; k<8; k++){
+        data = data | (canvas[k + 8*i][j])<<k;
+      }
+      spi_send_recv(data);
+    }
+  }
+}
+
+void display_clear( void ){
+  int i; int j; int k;
+  for(i=0; i<16; i++) display_string(i, "    ", 0);
+  for(i=0; i<4; i++)
+    for(j=0; j<128; j++)
+      pxlmap[i][j] = 0x00;
+      for(k=0; k<8; k++){
+        canvas[i*8+k][j] = 0;
+      }
+}
 
 
