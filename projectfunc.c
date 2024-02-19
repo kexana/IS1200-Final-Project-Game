@@ -82,7 +82,7 @@ void display_string(int line, char *s, char inv) {
   //3rd input is an inverter charachter, 4 least significant bits decide if the char to print is
   //inverted or not, e.g. 0b00001100 means the first two chars to print will be inverted
 
-	for(i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)// number of charachters per line
 		if(*s) {
 			//goes through the string setting each character the right place for display_update
       int k; 
@@ -102,7 +102,20 @@ void display_string(int line, char *s, char inv) {
 
 }
 
+// test funciton for the small numbers, could be deleted later
+void display_smallNums(){
+	int i;
+	for(i = 0; i < 6; i++){ // number of charachters per line
+      int k; 
+      int j; 
+      for(k = 0; k < 5; k++){
+        for(j=0; j<5; j++){
+          canvas[i * 5 + j][13 * 5 + k] = (smallNumbers[(i) * 5 + k]) >> j;
+		}
+      }
 
+	}
+} 
 
 
 //new functions for the project

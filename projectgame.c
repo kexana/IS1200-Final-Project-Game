@@ -111,13 +111,16 @@ void menu( void ){
 			c[i] =  ( ( buttonmap >> 2-i ) &0b1 ) + 48;
 		} 
 
-		display_string(0, c, 0 );
-		display_string(3, "PLAY", 0);
-		display_string(4, " 1p ", txtSelect[0]);
-		display_string(5, " 2p ", txtSelect[1]);
-		display_string(8, "Hall", txtSelect[2]);
-		display_string(9, " of ", txtSelect[2]); 
-		display_string(10, "fame", txtSelect[2]);
+		// display_string(0, c, 0 );
+		// display_string(3, "PLAY", 0);
+		// display_string(4, " 1p ", txtSelect[0]);
+		// display_string(5, " 2p ", txtSelect[1]);
+		// display_string(8, "Hall", txtSelect[2]);
+		// display_string(9, " of ", txtSelect[2]); 
+		// display_string(10, "fame", txtSelect[2]);
+
+		display_smallNums();
+
 		//display_update();
 	}
 }

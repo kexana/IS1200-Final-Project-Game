@@ -13,6 +13,9 @@ void quicksleep(int cyc);
 /* Declare bitmap array containing font */
 extern const uint8_t const font[128*8];
 
+/* Declare bitmap array containing small numbers font */
+extern const uint8_t const smallNumbers[11*5];
+
 /* Written as part of i/o: getbtns, getsw, enable_interrupt */
 int getbtns(void);
 int getsw(void);
@@ -26,6 +29,8 @@ void display_upgrade(void);
 
 /*display data all clear, also canvas*/
 void display_clear( void );
+
+void display_smallNums();
 
 /*bit map of the whole display, each pixel is the least significant bit of the corresponding char*/
 extern char canvas[32][128];
