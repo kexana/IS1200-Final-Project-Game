@@ -19,6 +19,9 @@ extern const uint8_t const smallNumbers[11*5];
 /* Declare bitmap array containing GUI sprite */
 extern const uint8_t const gui[128*32];
 
+/*Declare bitmap array containing background graphic 3 frames*/
+const uint8_t const backgroind[3 * 128 * 8];
+
 /* Written as part of i/o: getbtns, getsw, enable_interrupt */
 int getbtns(void);
 int getsw(void);
