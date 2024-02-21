@@ -16,6 +16,9 @@ extern const uint8_t const font[128*8];
 /* Declare bitmap array containing small numbers font */
 extern const uint8_t const smallNumbers[11*5];
 
+/* Declare bitmap array containing GUI sprite */
+extern const uint8_t const gui[128*32];
+
 /* Written as part of i/o: getbtns, getsw, enable_interrupt */
 int getbtns(void);
 int getsw(void);
@@ -30,7 +33,8 @@ void display_upgrade(void);
 /*display data all clear, also canvas*/
 void display_clear( void );
 
-void display_smallNums();
+void display_smallNums(void);
+void display_sprite(int x);
 
 /*bit map of the whole display, each pixel is the least significant bit of the corresponding char*/
 extern char canvas[32][128];

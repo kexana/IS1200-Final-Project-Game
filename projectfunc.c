@@ -117,6 +117,23 @@ void display_smallNums(){
 	}
 } 
 
+//test function for displaying sprites
+void display_sprite(int x){
+	int i, j, k;
+	int N = 128;
+	int M = 4;
+
+	for(i=0; i<N; i++){
+        for(j=0; j<M; j++){
+			uint8_t temp = gui[i + j];
+			for(k=0; k<N*8; k++){
+                canvas[k][i] = temp & 1;
+                temp >>= 1;
+            }
+        }
+	}
+}
+
 
 //new functions for the project
 
