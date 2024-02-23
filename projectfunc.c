@@ -3,7 +3,7 @@
 
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
-#include "projecthead.h"  /* Declatations for the project */
+#include "projecthead.h"  /* Declarations for the project */
 
 
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
@@ -75,39 +75,135 @@ void display_string(int line, char *s, char inv) {
 	int i; int l;
 	if(line < 0 || line >= 16) //change from base, for the vertical layout of text
 		return;
-  line = 16 - line - 1;
-  if(!s)
+  	line = 16 - line - 1;
+  	if(!s)
 		return;
 	
-  //3rd input is an inverter charachter, 4 least significant bits decide if the char to print is
+  //3rd input is an inverter character, 4 least significant bits decide if the char to print is
   //inverted or not, e.g. 0b00001100 means the first two chars to print will be inverted
 
-	for(i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++){// number of characters per line
 		if(*s) {
-			//goes through the string setting each character the right place for display_update
-      int k; 
-      int j; 
-      char verted = (inv >> (3 - i) ) & 0b001;
+		//goes through the string setting each character the right place for display_update, unless empty
+      	
+		int k; 
+      	int j; 
+      	char verted = (inv >> (3 - i) ) & 0b001;
 
 
-      for(k = 0; k < 8; k++){
-        for(j=0; j<8; j++){
-          if(!verted) canvas[i * 8 + j][line * 8 + k] = (font[*s * 8 + k]) >> j;
-        else canvas[i * 8 + j][line * 8 + k] = ( ~ font[*s * 8 + k]) >> j;
-        }
-      }
-
-			s++;
+      	for(k = 0; k < 8; k++){
+        	for(j=0; j<8; j++){
+        		if(!verted) canvas[i * 8 + j][line * 8 + k] = (font[*s * 8 + k]) >> j;
+        		else canvas[i * 8 + j][line * 8 + k] = ( ~ font[*s * 8 + k]) >> j;
+        	}
+      	}
+		s++;
 		}
+	}
 
 }
 
+//note: maybe in functions where we write to canvas, we should call it draw instead of display, it makes more sense that way
+//note maybe change the small 8, it looks very much like the zero.. otherwise v cool
 
+
+// test function for the small numbers, could be deleted later
+void display_smallNums(int line, int num){
+	int i; int k; int j; 
+	int numtoprint;
+	int divisor = 100000;
+
+	char zerosFlag = 0; //set this flag to 1 before the loop to display leading zeroes
+
+	line = 127 - line;
+	for(i = 0; i < 6; i++){ // number of characters per line
+		numtoprint = num / divisor;
+		num = num%divisor;
+		divisor = divisor /10;
+
+		if(!zerosFlag){
+			if(numtoprint == 0) continue;
+			zerosFlag = 1;
+		}
+
+    	for(k = 0; k < 5; k++){
+    		for(j=0; j<5; j++){
+        		canvas[i * 5 + j ][line -5 + k] = (smallNumbers[(numtoprint) * 5 + k]) >> j;
+			} 
+    	}
+
+	}
+} 
+
+//test function for displaying sprites
+/*void display_gui(void){
+	int i, j, k;
+	
+
+	for(i=0; i<128; i++){ //i for each row
+        for(j=0; j<4; j++){ //j for each column in the row
+			char temp = gui[(127-i)*4 + 3-j];
+			for(k=j*8; k<32; k++){
+                canvas[32-k-1][i] = temp & 0b1;
+                temp = temp >> 1;
+            }
+        }
+	}
+} */
+
+/*Displays an Sprite of size xSize by ySize, with the xOffset and yOffset*/
+void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset, int yOffset, short inf){
+	int i, j, k;
+
+	int canvasx; int canvasy;
+	
+	//info 16bit int, least 8 bits are for the canvas information (that is the 7 bits above the lowest)
+	//the other 8 are for flipping x or y axis; bit N.o. 8 is flip around y axis ((inf >> 7) & 0b1)
+	if((inf >> 8) & 0b1){
+		for(i=0; i<ySize; i++){ //i for each row
+			canvasy = i + yOffset;
+			if(canvasy<0 || canvasy>127) continue;
+
+			for(j=0; j<xSize/8; j++){ //j for each column in the row //division by 8 because one character is 8 bits
+				
+				char temp = pxlarray[(ySize-1-i)*4 + (xSize/8)-1 - j];
+
+				for(k=j*8; k<32; k++){
+
+					canvasx = 31-k + xOffset;
+					if(canvasx<0 || canvasx>31) continue;
+
+
+					canvas[31-canvasx][canvasy] = temp & 0b1 | (inf & 0xfe); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					temp = temp >> 1;
+				}
+			}
+		}
+	}else for(i=0; i<ySize; i++){ //i for each row
+			canvasy = i + yOffset;
+			if(canvasy<0 || canvasy>127) continue;
+
+			for(j=0; j<xSize/8; j++){ //j for each column in the row //division by 8 because one character is 8 bits
+				
+				char temp = pxlarray[(ySize-1-i)*4 + (xSize/8)-1 - j];
+
+				for(k=j*8; k<32; k++){
+
+					canvasx = 31-k + xOffset;
+					if(canvasx<0 || canvasx>31) continue;
+
+
+					canvas[canvasx][canvasy] = temp & 0b1; //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					temp = temp >> 1;
+				}
+			}
+		}
+}
 
 
 //new functions for the project
 
-void display_upgrade(void){
+void display_upgrade( void ){
   int i, j, k;
 	int c;
   char inv; //inverter
@@ -136,7 +232,7 @@ void display_upgrade(void){
 
 void display_clear( void ){
   int i; int j; int k;
-  for(i=0; i<16; i++) display_string(i, "    ", 0);
+  //for(i=0; i<16; i++) display_string(i, "    ", 0);
   for(i=0; i<4; i++)
     for(j=0; j<128; j++)
       for(k=0; k<8; k++){
