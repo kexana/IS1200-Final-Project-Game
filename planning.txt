@@ -14,3 +14,10 @@ Splitting up the tasks:
 -do UART multipl. //by friday 
 
 -do the rest, playtesting, optional stuffs whatevs
+
+additional tasks:
+-make the display_sprite function inf parameter be able to decide if the sprite should be drawn in transperant or opaque mode, 
+    meaning if it should only set the bits declared as 1 if transparent or all bits if opaque.
+-do the collision detection using a seperate 2d array containing hitboxes, the hitboxes will have to be small than the sprites
+     in some cases because animations were not made considering pixel by pixel comparisons.
+     e.g. when rolling the character anim frame is not small enough to fit without overlap through the hole of a barrier.

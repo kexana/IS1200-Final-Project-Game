@@ -103,11 +103,10 @@ void display_string(int line, char *s, char inv) {
 
 }
 
-//note: maybe in functions where we write to canvas, we should call it draw instead of display, it makes more sense that way
-//note maybe change the small 8, it looks very much like the zero.. otherwise v cool
+//could be aranged -> note: maybe in functions where we write to canvas, we should call it draw instead of display, it makes more sense that way
 
+//taken care of -> note: maybe change the small 8, it looks very much like the zero.. otherwise v cool
 
-// test function for the small numbers, could be deleted later
 void display_smallNums(int line, int num){
 	int i; int k; int j; 
 	int numtoprint;
@@ -135,23 +134,9 @@ void display_smallNums(int line, int num){
 	}
 } 
 
-//test function for displaying sprites
-/*void display_gui(void){
-	int i, j, k;
-	
-
-	for(i=0; i<128; i++){ //i for each row
-        for(j=0; j<4; j++){ //j for each column in the row
-			char temp = gui[(127-i)*4 + 3-j];
-			for(k=j*8; k<32; k++){
-                canvas[32-k-1][i] = temp & 0b1;
-                temp = temp >> 1;
-            }
-        }
-	}
-} */
-
-/*Displays an Sprite of size xSize by ySize, with the xOffset and yOffset*/
+/*Displays a Sprite of size xSize by ySize, with the xOffset and yOffset
+In order to work properly the sprite bitmap array should be declared as x = 32 by y = whatever height
+and the actual sprite x dimension should be devisible by 8*/
 void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset, int yOffset, short inf){
 	int i, j, k;
 
@@ -168,13 +153,13 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 				
 				char temp = pxlarray[(ySize-1-i)*4 + (xSize/8)-1 - j];
 
-				for(k=j*8; k<32; k++){
+				for(k=j*8; k<xSize; k++){
 
-					canvasx = 31-k + xOffset;
-					if(canvasx<0 || canvasx>31) continue;
+					canvasx = xSize-1-k + xOffset;
+					if(canvasx<0 || canvasx>xSize-1) continue;
 
 
-					canvas[31-canvasx][canvasy] = temp & 0b1 | (inf & 0xfe); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					canvas[xSize-1-canvasx][canvasy] = temp & 0b1 | (inf & 0xfe); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
 					temp = temp >> 1;
 				}
 			}
@@ -187,10 +172,10 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 				
 				char temp = pxlarray[(ySize-1-i)*4 + (xSize/8)-1 - j];
 
-				for(k=j*8; k<32; k++){
+				for(k=j*8; k<xSize; k++){
 
-					canvasx = 31-k + xOffset;
-					if(canvasx<0 || canvasx>31) continue;
+					canvasx = xSize-1-k + xOffset;
+					if(canvasx<0 || canvasx>xSize-1) continue;
 
 
 					canvas[canvasx][canvasy] = temp & 0b1; //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
@@ -232,7 +217,6 @@ void display_upgrade( void ){
 
 void display_clear( void ){
   int i; int j; int k;
-  //for(i=0; i<16; i++) display_string(i, "    ", 0);
   for(i=0; i<4; i++)
     for(j=0; j<128; j++)
       for(k=0; k<8; k++){
