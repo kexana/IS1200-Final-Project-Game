@@ -8,11 +8,46 @@
 int timeoutcount = 0;
 int timer = 0;
 char animframe[4];
+int playerPositionX = 0;
+int playerPositionY = 10;
 
 uint8_t buttonmap = 0;
+uint8_t buttonFlag = 0;
 uint8_t inputbuffer = 0; // 0000 0000, MSB = sw 4, LS 3 bits = btn 2 trhough 4;
 char sw4 = 0;
 
+void playerMovement(int action){
+	switch (action)
+	{
+	case 0:
+		//moving to the other lane
+		if(sw4){
+			playerPositionX-=6;
+		}else{
+			playerPositionX+=6;
+		}
+		break;
+	case 2:
+		//jumping
+		switch (animframe[action])
+		{
+		case 1:
+		case 2:
+			playerPositionY+=10;
+			break;
+		case 3:
+			playerPositionY+=5;
+			break;
+		case 5:
+			playerPositionY-=5;
+			break;
+		case 6:
+			playerPositionY-=10;
+			break;
+		}
+		break;
+	}
+}
 
 /* Interrupt Service Routine */
 void user_isr( void )
@@ -30,8 +65,10 @@ void user_isr( void )
 		sw4 = getsw();
 		int i;
 		for (i = 0; i < 4; i++){
-			if(animframe[i] != 0)
+			if(animframe[i] != 0){
 				animframe[i]++;
+				playerMovement(i);
+			}
 		}
 
 			if (timeoutcount == 10) // fps setter
@@ -45,8 +82,6 @@ void user_isr( void )
 		IFSCLR(0) = 0x0800;
 
 	}
-
-	
 }
 
 /* Game-specific initialization goes here */
@@ -169,70 +204,85 @@ void transitionBackground(){
 //animating character run cycle
 void characterRun(int posX, int posY){
 	switch(animframe[1]){
-			case 1:
-				display_sprite(16, 24, chrRun[0], posX, posY, 0x000);
-				break;
-			case 2:
-				display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
-				break;
-			case 3:
-				display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
-				break;
-			case 4:
-				display_sprite(16, 24, chrRun[0], posX, posY, 0x100);
-				animframe[1] = 1;
-				break;
-		}
+		case 1:
+			display_sprite(16, 24, chrRun[0], posX, posY, 0x000);
+			break;
+		case 2:
+			display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			break;
+		case 3:
+			display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			break;
+		case 4:
+			display_sprite(16, 24, chrRun[0], posX, posY, 0x100);
+			break;
+		case 5:
+			display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			break;
+		case 6:
+			display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			break;
+		case 7:
+			animframe[1] = 1;
+			break;
+	}
 }
 
 //animating character jump
 void characterJump(int posX, int posY){
 	switch(animframe[2]){
-			case 1:
-				display_sprite(16, 24, chrJump[0], posX, posY, 0x000);
-				break;
-			case 2:
-			case 3:
-				display_sprite(16, 24, chrJump[1], posX, posY, 0x000);
-				break;
-			case 4:
-				display_sprite(16, 24, chrJump[2], posX, posY, 0x000);
-				break;
-			case 5:
-				display_sprite(16, 24, chrJump[3], posX, posY, 0x000);
-				animframe[2] = 0;
-				animframe[1] = 1;
-				break;
-		}
+		case 1:
+			display_sprite(16, 24, chrJump[0], posX, posY, 0x000);
+			break;
+		case 2:
+		case 3:
+		case 4:
+			display_sprite(16, 24, chrJump[1], posX, posY, 0x000);
+			break;
+		case 5:
+			display_sprite(16, 24, chrJump[2], posX, posY, 0x000);
+			break;
+		case 6:
+			display_sprite(16, 24, chrJump[3], posX, posY, 0x000);
+			break;
+		case 7:
+			animframe[2] = 0;
+			animframe[1] = 1;
+			buttonFlag = 0;
+			break;
+	}
 }
 
 //animating character roll
 void characterRoll(int posX, int posY){
 	switch(animframe[3]){
-			case 1:
-				display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
-				break;
-			case 2:
-				display_sprite(16, 24, chrRoll[1], posX, posY, 0x000);
-				break;
-			case 3:
-				display_sprite(16, 24, chrRoll[2], posX, posY, 0x000);
-				break;
-			case 4:
-				display_sprite(16, 24, chrRoll[3], posX, posY, 0x000);
-				break;
-			case 5:
-				display_sprite(16, 24, chrRoll[4], posX, posY, 0x000);
-				break;
-			case 6:
-				display_sprite(16, 24, chrRoll[5], posX, posY, 0x000);
-				break;
-			case 7:
-				display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
-				animframe[3] = 0;
-				animframe[1] = 1;
-				break;
-		}
+		case 1:
+			display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			break;
+		case 2:
+			display_sprite(16, 24, chrRoll[1], posX, posY, 0x000);
+			break;
+		case 3:
+			display_sprite(16, 24, chrRoll[2], posX, posY, 0x000);
+			break;
+		case 4:
+			display_sprite(16, 24, chrRoll[3], posX, posY, 0x000);
+			break;
+		case 5:
+			display_sprite(16, 24, chrRoll[4], posX, posY, 0x000);
+			break;
+		case 6:
+			display_sprite(16, 24, chrRoll[5], posX, posY, 0x000);
+			break;
+		case 7:
+			display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			break;
+		case 8:
+			animframe[3] = 0;
+			animframe[1] = 1;
+			buttonFlag = 0;
+			break;
+	}
 }
 
 void game( void ){
@@ -242,13 +292,17 @@ void game( void ){
 	//Currently done in adifferent way but we could also use this action var if need be 
 	//int action = 0; //0 - run; 1 - jump; 2 - roll; 3 - switch side
 
-	int playerPositionX = 0;
-	int playerPositionY = 5;
 
 	//display_gui();
 	display_sprite(32, 36, gui, 0, 92, 0);
 	display_sprite(32, 90, bg1, 0, 0, sw4<<8);
 	display_upgrade();
+
+	if(sw4){
+		playerPositionX = 0;
+	}else{
+		playerPositionX = 10;
+	}
 
 	//character run begin 
 	animframe[1] = 1;
@@ -260,15 +314,18 @@ void game( void ){
 			animframe[0] = 1;
 		}
 		//character actions
-		switch((inputbuffer&0x07)){
-			case 0b010:
-				animframe[2] = 1;
-				animframe[1] = 0;
-				break;
-			case 0b100:
-				animframe[3] = 1;
-				animframe[1] = 0;
-				break;
+		if(inputbuffer & 0x07 && !buttonFlag){
+			buttonFlag = 1;
+			switch((inputbuffer&0x07)){
+				case 0b010:
+					animframe[2] = 1;
+					animframe[1] = 0;
+					break;
+				case 0b100:
+					animframe[3] = 1;
+					animframe[1] = 0;
+					break;
+			}
 		}
 		if(animframe[0]){
 			transitionBackground();
@@ -304,7 +361,7 @@ void highscores( void ){
 	buttonmap = 0;
 	
 	//testing here
-	
+
 	//display_sprite(8, 5, coin, 0, 0, 0);
 	//display_sprite(24, 28, train, 0, 0, 0);
 	//display_sprite(16, 12, shortBarrier, 0, 30, 0);

@@ -21,3 +21,4 @@ additional tasks:
 -do the collision detection using a seperate 2d array containing hitboxes, the hitboxes will have to be small than the sprites
      in some cases because animations were not made considering pixel by pixel comparisons.
      e.g. when rolling the character anim frame is not small enough to fit without overlap through the hole of a barrier.
+-do fix the xOffset parameter of the display_sprite function - it doesnt seem to work.

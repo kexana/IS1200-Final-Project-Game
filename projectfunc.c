@@ -155,7 +155,7 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 
 				for(k=j*8; k<xSize; k++){
 
-					canvasx = xSize-1-k + xOffset;
+					canvasx = xSize-1-k ;//+ xOffset;
 					if(canvasx<0 || canvasx>xSize-1) continue;
 
 
@@ -174,7 +174,7 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 
 				for(k=j*8; k<xSize; k++){
 
-					canvasx = xSize-1-k + xOffset;
+					canvasx = xSize-1-k;// + xOffset;
 					if(canvasx<0 || canvasx>xSize-1) continue;
 
 
@@ -184,6 +184,7 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 			}
 		}
 }
+
 
 
 //new functions for the project
