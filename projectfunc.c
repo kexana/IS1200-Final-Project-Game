@@ -136,7 +136,7 @@ void display_smallNums(int line, int num){
 
 /*Displays a Sprite of size xSize by ySize, with the xOffset and yOffset
 In order to work properly the sprite bitmap array should be declared as x = 32 by y = whatever height
-and the actual sprite x dimension should be devisible by 8*/
+and the actual sprite x dimension should be divisible by 8*/
 void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset, int yOffset, short inf){
 	int i, j, k;
 
@@ -144,7 +144,7 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 	
 	//info 16bit int, least 8 bits are for the canvas information (that is the 7 bits above the lowest)
 	//the other 8 are for flipping x or y axis; bit N.o. 8 is flip around y axis ((inf >> 7) & 0b1)
-	if((inf >> 8) & 0b1){
+	if((inf >> 8) & 0b1){	//if sprite is flipped around y axis
 		for(i=0; i<ySize; i++){ //i for each row
 			canvasy = i + yOffset;
 			if(canvasy<0 || canvasy>127) continue;
@@ -155,18 +155,18 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 
 				for(k=j*8; k<xSize; k++){
 
-					canvasx = xSize-1-k ;//+ xOffset;
-					if(canvasx<0 || canvasx>xSize-1) continue;
+					canvasx =  xOffset + k;	//this is the important change
+					if(canvasx<0 || canvasx>31) continue;
 
 
-					canvas[xSize-1-canvasx][canvasy] = temp & 0b1 | (inf & 0xfe); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b10 | temp & 0b1 | (inf & 0xfc); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
 					temp = temp >> 1;
 				}
 			}
 		}
-	}else for(i=0; i<ySize; i++){ //i for each row
+	}else for(i=0; i<ySize; i++){ //i for each row //sprite is not flipped around y axis
 			canvasy = i + yOffset;
-			if(canvasy<0 || canvasy>127) continue;
+			if(canvasy<0 || canvasy>127) continue; //it proved to be very good praxis to always check this
 
 			for(j=0; j<xSize/8; j++){ //j for each column in the row //division by 8 because one character is 8 bits
 				
@@ -174,26 +174,131 @@ void display_sprite(int xSize, int ySize, const uint8_t pxlarray[], int xOffset,
 
 				for(k=j*8; k<xSize; k++){
 
-					canvasx = xSize-1-k;// + xOffset;
-					if(canvasx<0 || canvasx>xSize-1) continue;
+					canvasx = xSize-1 -k + xOffset;
+					if(canvasx<0 || canvasx>31) continue;
 
 
-					canvas[canvasx][canvasy] = temp & 0b1; //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b10 | temp & 0b1 | (inf & 0xfc); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
 					temp = temp >> 1;
 				}
 			}
 		}
 }
 
+/*we draw and set the reserved background bit to the relevant background; 
+remember backgrounds are always 32x90, and always placed at 0, 0*/
+void display_background(const uint8_t pxlarray[], short inf){
+	int i, j, k;
+	
+	//function call			display_sprite(32, 90, bg1, 0, 0, ~sw4<<8);
+	//is replaced by		display_background(bg1, ~sw4<<8);
 
+	if((inf >> 8) & 0b1){
+		for(i=0; i<90; i++){ //i for each row
+			for(j=0; j<4; j++){ //j for each column in the row
+				
+				char temp = pxlarray[(89-i)*4 + 3 - j];
 
-//new functions for the project
+				for(k=j*8; k<32; k++){
+					canvas[k][i] = (temp & 0b1)<<1 | (temp & 0b1) | (inf & 0xfc); 
+					temp = temp >> 1;
+				}
+			}
+		}
+	}else for(i=0; i<90; i++){ //i for each row
+			for(j=0; j<4; j++){ //j for each column in the row //division by 8 because one character is 8 bits
+				
+				char temp = pxlarray[(89-i)*4 + 3 - j];
 
+				for(k=j*8; k<32; k++){
+					canvas[31-k][i] = (temp & 0b1)<<1 | (temp & 0b1) | (inf & 0xfc); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					temp = temp >> 1;
+				}
+			}
+		}
+}
+
+/*we move sprite location on canvas by vector x and vector y 
+the remaining artifacts are cleared, and background is shown instead;
+this does not draw the sprite, just updates its position!
+use this whenever you change the position of a sprite!
+note: do not change a sprite's position during an interrupt, put it on a buffer, and deal with it in main()*/
+void change_sprite_by_vector(int xSize, int ySize, int *x, int *y, int vectorX, int vectorY){
+	int i; int j;
+
+	//remember, canvas[][] is 2d array of characters, the last bit is passed to the display as data (on the correct page...)
+	//we can use the M.S. 7 B. as information about sprites and such;
+	//our convention is to use the 2nd LSB as background layer;
+
+	//as such when we shift a sprite by vector, we shall update the canvas that the rectangle of pixels where the sprite used to be
+	// shall display the old background once again
+
+	int canvasx; int canvasy;
+	if(vectorX>0){
+		for(i=0; i<vectorX; i++){
+			canvasx = i+*x;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j<ySize; j++){
+				canvasy = j+*y;
+				if(canvasy<0 || canvasy>127) continue;
+
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy] & 0xfe | (canvas[canvasx][canvasy]>>1)&0b1;
+			}
+		}
+	}else{
+		for(i=0; i>vectorX; i--){
+			canvasx = i+*x+xSize;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j<ySize; j++){
+				canvasy = j+*y;
+				if(canvasy<0 || canvasy>127) continue;
+
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy] & 0xfe | (canvas[canvasx][canvasy]>>1)&0b1;
+
+			}
+		}
+	}
+		
+	if(vectorY>0){
+		for(i=0; i<xSize; i++){
+			canvasx = i+*x;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j<vectorY; j++){
+				canvasy = j+*y;
+				if(canvasy<0 || canvasy>127) continue;
+
+				canvas[canvasx][canvasy] =  canvas[canvasx][canvasy] & 0xfe | (canvas[canvasx][canvasy]>>1)&0b1;
+			}
+		}
+	}else{
+		for(i=0; i<xSize; i++){
+			canvasx = i+*x;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j>=vectorY; j--){ //note the >= (idk why, idk maths ¯\_(ツ)_/¯)
+				canvasy = j+*y+ySize;
+				if(canvasy<0 || canvasy>127) continue;
+
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy] & 0xfe | (canvas[canvasx][canvasy]>>1)&0b1;
+
+			}
+		}
+	}
+
+	*x +=vectorX; 
+	*y +=vectorY;
+
+}
+
+/*this is essentially the display_update() but without textbuffer, and is just nicer /w a canvas*/
 void display_upgrade( void ){
-  int i, j, k;
-	int c;
-  char inv; //inverter
-  char data;
+	int i, j, k;
+	
+  	char data;
+
 	for(i = 0; i < 4; i++) {
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
 
@@ -209,7 +314,7 @@ void display_upgrade( void ){
       
       data = 0;
       for(k=0; k<8; k++){
-        data = data | (canvas[k + 8*i][j])<<k;
+        data = data | (canvas[k + 8*i][j] &0b1)<<k;
       }
       spi_send_recv(data);
     }
