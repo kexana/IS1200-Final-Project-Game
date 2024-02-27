@@ -67,7 +67,7 @@ void user_isr( void )
 		
 
 	 	
-		//if (timeoutcount%2 == 0){ //for debugging, halving, or even dividing by three the framerate
+		//if (timeoutcount%3 == 0){ //for debugging, halving, or even dividing by three the framerate
 			display_upgrade();
 			int i;
 			for (i = 0; i < 4; i++){
@@ -222,22 +222,28 @@ void transitionBackground(){
 void characterRun(int posX, int posY){
 	switch(animframe[1]){
 		case 1:
-			display_sprite(16, 24, chrRun[0], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRun[0], posX, posY, 0x000);
+			display_player(chrRun[0], posX, posY, 0x000);
 			break;
 		case 2:
-			display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			display_player(chrRun[1], posX, posY, 0x000);
 			break;
 		case 3:
-			display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			display_player(chrRun[1], posX, posY, 0x100);
 			break;
 		case 4:
-			display_sprite(16, 24, chrRun[0], posX, posY, 0x100);
+			//display_sprite(16, 24, chrRun[0], posX, posY, 0x100);
+			display_player(chrRun[0], posX, posY, 0x100);
 			break;
 		case 5:
-			display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			display_player(chrRun[1], posX, posY, 0x100);
 			break;
 		case 6:
-			display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			display_player(chrRun[1], posX, posY, 0x000);
 			break;
 		case 7:
 			animframe[1] = 1;
@@ -249,18 +255,22 @@ void characterRun(int posX, int posY){
 void characterJump(int posX, int posY){
 	switch(animframe[2]){
 		case 1:
-			display_sprite(16, 24, chrJump[0], posX, posY, 0x000);
+			//display_sprite(16, 24, chrJump[0], posX, posY, 0x000);
+			display_player(chrJump[0], posX, posY, 0x000);
 			break;
 		case 2:
 		case 3:
 		case 4:
-			display_sprite(16, 24, chrJump[1], posX, posY, 0x000);
+			//display_sprite(16, 24, chrJump[1], posX, posY, 0x000);
+			display_player(chrJump[1], posX, posY, 0x000);
 			break;
 		case 5:
-			display_sprite(16, 24, chrJump[2], posX, posY, 0x000);
+			//display_sprite(16, 24, chrJump[2], posX, posY, 0x000);
+			display_player(chrRun[2], posX, posY, 0x000);
 			break;
 		case 6:
-			display_sprite(16, 24, chrJump[3], posX, posY, 0x000);
+			//display_sprite(16, 24, chrJump[3], posX, posY, 0x000);
+			display_player(chrRun[3], posX, posY, 0x000);
 			break;
 		case 7:
 			animframe[2] = 0;
@@ -274,25 +284,32 @@ void characterJump(int posX, int posY){
 void characterRoll(int posX, int posY){
 	switch(animframe[3]){
 		case 1:
-			display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			display_player(chrRoll[0], posX, posY, 0x000);
 			break;
 		case 2:
-			display_sprite(16, 24, chrRoll[1], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[1], posX, posY, 0x000);
+			display_player(chrRoll[1], posX, posY, 0x000);
 			break;
 		case 3:
-			display_sprite(16, 24, chrRoll[2], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[2], posX, posY, 0x000);
+			display_player(chrRoll[2], posX, posY, 0x000);
 			break;
 		case 4:
-			display_sprite(16, 24, chrRoll[3], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[3], posX, posY, 0x000);
+			display_player(chrRoll[3], posX, posY, 0x000);
 			break;
 		case 5:
-			display_sprite(16, 24, chrRoll[4], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[4], posX, posY, 0x000);
+			display_player(chrRoll[4], posX, posY, 0x000);
 			break;
 		case 6:
-			display_sprite(16, 24, chrRoll[5], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[5], posX, posY, 0x000);
+			display_player(chrRoll[5], posX, posY, 0x000);
 			break;
 		case 7:
-			display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			//display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			display_player(chrRoll[0], posX, posY, 0x000);
 			break;
 		case 8:
 			animframe[3] = 0;
@@ -305,6 +322,9 @@ void characterRoll(int posX, int posY){
 void game( void ){
 	display_clear();
 	buttonmap = 0;
+
+	int i;
+	for(i=0; i<4; i++) animframe[i] = 0; //sometimes it gets stuck just debugging init
 
 	//Currently done in adifferent way but we could also use this action var if need be 
 	//int action = 0; //0 - run; 1 - jump; 2 - roll; 3 - switch side

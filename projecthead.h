@@ -82,6 +82,12 @@ note: do not change a sprite's position during an interrupt,
 put it on a buffer, and deal with it in main( )*/
 void change_sprite_by_vector(int xSize, int ySize, int *x, int *y, int vectorX, int vectorY);
 
+/*Takes in a playercharacter bitmap array;
+cuts out the unneeded bits, flips it if needed, and displays it
+it also sets the 3rd LSB to the player bits
+remember the player sprite size is always 16x24 pixels*/
+void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf);
+
 /*bit map of the whole display, each pixel is the least significant bit of the corresponding char*/
 extern char canvas[32][128];
 
