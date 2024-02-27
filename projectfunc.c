@@ -347,10 +347,17 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 				char locRflag =0;
 				for(j=0; j<16; j++){
 					if(!locLflag){
+<<<<<<< Updated upstream
 						if((localizer>>j)&0b1) {locLflag=1; locL=j;}
 					}
 					if(!locRflag){
 						if((localizer<<j)&0x8000) {locRflag=1; locR=15-j;}
+=======
+						if((localizer>>j)&0b1 || j==15) {locLflag=1; locL=j;}
+					}
+					if(!locRflag){
+						if((localizer<<j)&0x8000 || j==15) {locRflag=1; locR=15-j;}
+>>>>>>> Stashed changes
 					}
 				}
 
@@ -406,10 +413,17 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 				char locRflag =0;
 				for(j=0; j<16; j++){
 					if(!locLflag){
+<<<<<<< Updated upstream
 						if((localizer>>j)&0b1) {locLflag=1; locL=j;}
 					}
 					if(!locRflag){
 						if((localizer<<j)&0x8000) {locRflag=1; locR=15-j;}
+=======
+						if((localizer>>j)&0b1 || j==15) {locLflag=1; locL=j;}
+					}
+					if(!locRflag){
+						if((localizer<<j)&0x8000 || j==15) {locRflag=1; locR=15-j;}
+>>>>>>> Stashed changes
 					}
 				}
 				for(k=/*j*8*/0; k<xSize; k++){
