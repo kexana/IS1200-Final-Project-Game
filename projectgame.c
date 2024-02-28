@@ -143,16 +143,156 @@ void menu( void ){
 		 display_smallNums(123, timer);
 		//display_smallNums();
 
+<<<<<<< Updated upstream
 		//display_update();
+=======
+
+//animating background transition when the switch is flipped
+void transitionBackground(){
+	switch(animframe[0]){
+		case 1:
+			//display_sprite(32, 90, bg1, 0, 0, ~sw4<<8);
+			display_background(bg1, ~sw4<<8);
+			break;
+		case 2:
+			//display_sprite(32, 90, bg2, 0, 0, ~sw4<<8);
+			display_background(bg2, ~sw4<<8);
+			break;
+		case 3:
+			//display_sprite(32, 90, bg3, 0, 0, sw4<<8);
+			display_background(bg3, sw4<<8);
+			break;
+		case 4:
+			//display_sprite(32, 90, bg2, 0, 0, sw4<<8);
+			display_background(bg2, sw4<<8);
+			break;
+		case 5:
+			//display_sprite(32, 90, bg1, 0, 0, sw4<<8);
+			display_background(bg1, sw4<<8);
+			animframe[0] = 0;
+			break;
+	}
+}
+
+//animating character run cycle
+void characterRun(int posX, int posY){
+	switch(animframe[1]){
+		case 1:
+			//display_sprite(16, 24, chrRun[0], posX, posY, 0x000);
+			display_player(chrRun[0], posX, posY, 0x000);
+			break;
+		case 2:
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			display_player(chrRun[1], posX, posY, 0x000);
+			break;
+		case 3:
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			display_player(chrRun[1], posX, posY, 0x100);
+			break;
+		case 4:
+			//display_sprite(16, 24, chrRun[0], posX, posY, 0x100);
+			display_player(chrRun[0], posX, posY, 0x100);
+			break;
+		case 5:
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
+			display_player(chrRun[1], posX, posY, 0x100);
+			break;
+		case 6:
+			//display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
+			display_player(chrRun[1], posX, posY, 0x000);
+			break;
+		case 7:
+			animframe[1] = 1;
+			break;
+	}
+}
+
+//animating character jump
+void characterJump(int posX, int posY){
+	switch(animframe[2]){
+		case 1:
+			//display_sprite(16, 24, chrJump[0], posX, posY, 0x000);
+			display_player(chrJump[0], posX, posY, 0x000);
+			break;
+		case 2:
+		case 3:
+		case 4:
+			//display_sprite(16, 24, chrJump[1], posX, posY, 0x000);
+			display_player(chrJump[1], posX, posY, 0x000);
+			break;
+		case 5:
+			//display_sprite(16, 24, chrJump[2], posX, posY, 0x000);
+			display_player(chrRun[2], posX, posY, 0x000);
+			break;
+		case 6:
+			//display_sprite(16, 24, chrJump[3], posX, posY, 0x000);
+			display_player(chrRun[3], posX, posY, 0x000);
+			break;
+		case 7:
+			animframe[2] = 0;
+			animframe[1] = 1;
+			buttonFlag = 0;
+			break;
+	}
+}
+
+//animating character roll
+void characterRoll(int posX, int posY){
+	switch(animframe[3]){
+		case 1:
+			//display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			display_player(chrRoll[0], posX, posY, 0x000);
+			break;
+		case 2:
+			//display_sprite(16, 24, chrRoll[1], posX, posY, 0x000);
+			display_player(chrRoll[1], posX, posY, 0x000);
+			break;
+		case 3:
+			//display_sprite(16, 24, chrRoll[2], posX, posY, 0x000);
+			display_player(chrRoll[2], posX, posY, 0x000);
+			break;
+		case 4:
+			//display_sprite(16, 24, chrRoll[3], posX, posY, 0x000);
+			display_player(chrRoll[3], posX, posY, 0x000);
+			break;
+		case 5:
+			//display_sprite(16, 24, chrRoll[4], posX, posY, 0x000);
+			display_player(chrRoll[4], posX, posY, 0x000);
+			break;
+		case 6:
+			//display_sprite(16, 24, chrRoll[5], posX, posY, 0x000);
+			display_player(chrRoll[5], posX, posY, 0x000);
+			break;
+		case 7:
+			//display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
+			display_player(chrRoll[0], posX, posY, 0x000);
+			break;
+		case 8:
+			animframe[3] = 0;
+			animframe[1] = 1;
+			buttonFlag = 0;
+			break;
+>>>>>>> Stashed changes
 	}
 }
 
 void game( void ){
 	display_clear();
 	buttonmap = 0;
+<<<<<<< Updated upstream
 	int action = 0; //0 - run; 1 - jump; 2 - roll; 3 - switch side
 	//int a[4] = {&bg1, &bg2, &gui, &bg3};
 	
+=======
+
+	int i;
+	for(i=0; i<4; i++) animframe[i] = 0; //sometimes it gets stuck just debugging init
+
+	//Currently done in a different way but we could also use this action var if need be 
+	//int action = 0; //0 - run; 1 - jump; 2 - roll; 3 - switch side
+
+
+>>>>>>> Stashed changes
 	//display_gui();
 	display_sprite(32, 36, gui, 0, 92, 0);
 	
@@ -161,6 +301,10 @@ void game( void ){
 
 
 	while(1){
+<<<<<<< Updated upstream
+=======
+		
+>>>>>>> Stashed changes
 		if(gamestate != 1) return;
 		//display_string(5, " hS", 0);
 
@@ -176,6 +320,14 @@ void game( void ){
 		{
 			gamestate = 0;
 			buttonmap = 0;
+		}
+
+		if(newFrameFlag){
+			
+			moveObsticles(sw4);
+			drawObsticles(sw4);
+			
+			newFrameFlag = 0;
 		}
 	}
 	
