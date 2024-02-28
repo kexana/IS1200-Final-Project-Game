@@ -107,10 +107,13 @@ extern inline void srand(int x);
 /*contains the current obsticles to be put in game
 encoding: LS 2 Bits : 0 - empty space, 01 - tall barrier, 01- short barrier, 11 - train 
 MS 14 bits are MS 7 bits obsticle position x, next 7 bits obsticle position y*/
-uint8_t currentFieldQueue[2][4];
+uint16_t currentFieldQueue[2][4];
 
 //sets initial valuse to the currentFieldQueue
 void initializeFieldQueue(void);
+
+void moveObsticles(uint8_t switchState);
+void drawObsticles(uint8_t switchState);
 
 //asdasasdssa
 extern const uint8_t const cub1[];

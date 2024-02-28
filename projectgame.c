@@ -10,6 +10,7 @@ int timer = 0;
 char animframe[4];
 int playerPositionX = 0;
 int playerPositionY = 9;
+uint8_t newFrameFlag = 0;
 
 int playerPositionXbuffer = 0; //start the same as playerPosition
 int playerPositionYbuffer = 9;
@@ -69,6 +70,7 @@ void user_isr( void )
 	 	
 		//if (timeoutcount%2 == 0){ //for debugging, halving, or even dividing by three the framerate
 			display_upgrade();
+			newFrameFlag = 1;
 			int i;
 			for (i = 0; i < 4; i++){
 				if(animframe[i] != 0){
@@ -345,8 +347,11 @@ void game( void ){
 	fieldGeneration();
 
 	while(1){
-
-
+		if(newFrameFlag){
+			moveObsticles(sw4);
+			drawObsticles(sw4);
+			newFrameFlag = 0;
+		}
 		if(gamestate != 1) return;
 
 		if( ( (inputbuffer&0x80) >>7) !=sw4){
@@ -391,30 +396,7 @@ void game( void ){
 			characterRun(playerPositionX, playerPositionY);
 		}
 
-		//this is just testing dont worry about the thousand switch cases
 
-		switch(currentFieldQueue[0][(timer/2)%4]){
-			case 1:
-				display_sprite(16, 20, tallBarrier, -8 + 16*sw4, 70, 0);
-				break;
-			case 2:
-				display_sprite(16, 12, shortBarrier, -8 + 16*sw4, 70, 0);
-				break;
-			case 3:
-				display_sprite(24, 28, train, -12 + 16*sw4, 70, sw4<<8);
-				break;
-		}
-		switch(currentFieldQueue[1][(timer/2)%4]){
-			case 1:
-				display_sprite(16, 20, tallBarrier, 8+ 16*sw4, 70, 0);
-				break;
-			case 2:
-				display_sprite(16, 12, shortBarrier, 8+ 16*sw4, 70, 0);
-				break;
-			case 3:
-				display_sprite(24, 28, train, 4+ 16*sw4, 70, sw4<<8);
-				break;
-		}
 		display_smallNums(7, timer);
 		
 		if (buttonmap == 0b001)  //means select
