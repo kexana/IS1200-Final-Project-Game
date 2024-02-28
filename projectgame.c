@@ -109,6 +109,15 @@ void gameinit( void )
 	IPC(2) = ( IPC(2) & 0xffffffe0) | (0b111 << 2); // T2IP set to 5
 
 
+	TMR1 = 0; // timer 1 setup, this timer is used only for getting an arbitrary seed for the random generation
+  	PR1 = 31250;
+  	IFSCLR(0) = 0x10; // clear interrupt flag for timer 1
+
+	T1CON = T1CON & 0xfffff0f | 0x70;			  // set prescale;
+	//IEC(0) = (IEC(0) & 0xffffffef) | (0x1 << 4);  // T1IE set
+	//IPC(1) = ( IPC(1) & 0xffffffe0) | (0b111 << 2); // T1IP set to 5
+
+
 //surp
 	//  TRISD = TRISD | 0xfe0;
   	TRISDSET = 0x100;
@@ -124,7 +133,6 @@ void gameinit( void )
 	TRISDSET = 0b1 << 10;
 
 	enable_interrupt();
-	
 }
 
 /* This function is called repetitively from the main program */
@@ -136,6 +144,8 @@ void projectwork( void ) {
 }
 
 void menu( void ){
+	T1CONSET = 0x8000; // enable timer 1;
+
 	buttonmap = 0;
 	char selector = 0;
 	const int menuOptions = 3;	//number of options
@@ -303,10 +313,15 @@ void characterRoll(int posX, int posY){
 }
 
 void game( void ){
+	
+	srand(TMR1); // seed the generation by some value based on timer 1
+	T1CONCLR = 0x8000; // disable timer 1;
+	initializeFieldQueue();
+
 	display_clear();
 	buttonmap = 0;
 
-	//Currently done in adifferent way but we could also use this action var if need be 
+	//Currently done in a different way but we could also use this action var if need be 
 	//int action = 0; //0 - run; 1 - jump; 2 - roll; 3 - switch side
 
 
@@ -327,7 +342,11 @@ void game( void ){
 	//character run begin 
 	animframe[1] = 1;
 
+	fieldGeneration();
+
 	while(1){
+
+
 		if(gamestate != 1) return;
 
 		if( ( (inputbuffer&0x80) >>7) !=sw4){
@@ -372,6 +391,30 @@ void game( void ){
 			characterRun(playerPositionX, playerPositionY);
 		}
 
+		//this is just testing dont worry about the thousand switch cases
+
+		switch(currentFieldQueue[0][(timer/2)%4]){
+			case 1:
+				display_sprite(16, 20, tallBarrier, -8 + 16*sw4, 70, 0);
+				break;
+			case 2:
+				display_sprite(16, 12, shortBarrier, -8 + 16*sw4, 70, 0);
+				break;
+			case 3:
+				display_sprite(24, 28, train, -12 + 16*sw4, 70, sw4<<8);
+				break;
+		}
+		switch(currentFieldQueue[1][(timer/2)%4]){
+			case 1:
+				display_sprite(16, 20, tallBarrier, 8+ 16*sw4, 70, 0);
+				break;
+			case 2:
+				display_sprite(16, 12, shortBarrier, 8+ 16*sw4, 70, 0);
+				break;
+			case 3:
+				display_sprite(24, 28, train, 4+ 16*sw4, 70, sw4<<8);
+				break;
+		}
 		display_smallNums(7, timer);
 		
 		if (buttonmap == 0b001)  //means select
