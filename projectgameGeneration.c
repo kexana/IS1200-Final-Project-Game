@@ -30,8 +30,8 @@ void enqueue(int lane, uint8_t value)
             queueTail[lane]++;
             currentFieldQueue[lane][queueTail[lane]] = value;
             //currentFieldQueue[lane][queueTail[lane]] = ((currentFieldQueue[lane][queueTail[lane]] & 0x0003) | (0x8 << 9)) | 0x46 << 2;
-            obsticlePositionX[0][queueTail[lane]] = -4;
-            obsticlePositionX[1][queueTail[lane]] = 12;
+            obsticlePositionX[0][queueTail[lane]] = -8;
+            obsticlePositionX[1][queueTail[lane]] = 8;
             obsticlePositionY[queueTail[lane]] = 70;
             /*obsticlePositionXBuffer[queueTail[lane]] = 8;
             obsticlePositionYBuffer[queueTail[lane]] = 70;*/
@@ -127,27 +127,28 @@ void moveObsticles(uint8_t switchState){
 void drawObsticles(uint8_t switchState){
     int i;
     for (i = 0; i < 1/*queueMaxSize*/; i++){
-
+        
+        int xOffset = switchState * (((obsticlePositionY[i])+210)/18);
         switch(currentFieldQueue[0][i]){
 			case 1:
-				display_sprite(16, 20, tallBarrier, (obsticlePositionX[0][i] - 4*switchState), obsticlePositionY[i], 0x20);
+				display_sprite(16, 20, tallBarrier, (obsticlePositionX[0][i] + xOffset), obsticlePositionY[i], 0x20);
 				break;
 			case 2:
-				display_sprite(16, 12, shortBarrier, (obsticlePositionX[0][i] - 4*switchState), obsticlePositionY[i], 0x18);
+				display_sprite(16, 12, shortBarrier, (obsticlePositionX[0][i] + xOffset), obsticlePositionY[i], 0x18);
 				break;
 			case 3:
-				display_sprite(24, 28, train, (obsticlePositionX[0][i] -4 - 4*switchState), obsticlePositionY[i], switchState<<8 | 0x10);
+				display_sprite(24, 28, train, (obsticlePositionX[0][i] -4 + xOffset), obsticlePositionY[i], switchState<<8 | 0x10);
 				break;
 		}
 		switch(currentFieldQueue[1][i]){
 			case 1:
-				display_sprite(16, 20, tallBarrier, (obsticlePositionX[1][i] +4*switchState), obsticlePositionY[i], 0x20);
+				display_sprite(16, 20, tallBarrier, (obsticlePositionX[1][i] + xOffset), obsticlePositionY[i], 0x20);
 				break;
 			case 2:
-				display_sprite(16, 12, shortBarrier, (obsticlePositionX[1][i] +4*switchState), obsticlePositionY[i], 0x18);
+				display_sprite(16, 12, shortBarrier, (obsticlePositionX[1][i] + xOffset), obsticlePositionY[i], 0x18);
 				break;
 			case 3:
-				display_sprite(24, 28, train, (obsticlePositionX[1][i] -4 +4*switchState), obsticlePositionY[i], switchState<<8 | 0x10);
+				display_sprite(24, 28, train, (obsticlePositionX[1][i] -4 + xOffset), obsticlePositionY[i], switchState<<8 | 0x10);
 				break;
 		}
     }
