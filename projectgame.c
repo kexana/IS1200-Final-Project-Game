@@ -11,6 +11,8 @@ char animframe[4];
 int playerPositionX = 0;
 int playerPositionY = 9;
 uint8_t newFrameFlag = 0;
+uint8_t spawnflag = 0;
+uint8_t spawnFrequency = 5; //how many seconds before executing next generation
 
 int playerPositionXbuffer = 0; //start the same as playerPosition
 int playerPositionYbuffer = 9;
@@ -92,6 +94,11 @@ void user_isr( void )
 
 				// here we used to tick a time by one second
 			}
+
+			if(timer%spawnFrequency == 0){
+				spawnflag = 1;
+			}
+
 	}else if(IFS(0) & 0x0800){
 		IFSCLR(0) = 0x0800;
 
@@ -364,8 +371,6 @@ void game( void ){
 	//character run begin 
 	animframe[1] = 1;
 
-	fieldGeneration();
-
 	while(1){
 		
 		if(gamestate != 1) return;
@@ -422,11 +427,15 @@ void game( void ){
 		}
 
 		if(newFrameFlag){
-			
 			moveObsticles(sw4);
 			drawObsticles(sw4);
 			
 			newFrameFlag = 0;
+		}
+
+		if(spawnflag){
+			fieldGeneration();
+			spawnflag = 0;
 		}
 	}
 	

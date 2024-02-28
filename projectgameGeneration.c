@@ -12,6 +12,7 @@ int obsticlePositionX[2][4];
 int obsticlePositionY[4];
 
 uint8_t queueMaxSize = 4;
+int obstCount=0;
 
 char cicamica = 0;
 
@@ -42,9 +43,12 @@ void dequeue(uint8_t lane){
     if(queueHead[lane] == queueTail[lane]){
       //Empty
    }else{
-      queueHead[lane]++;
-      if(queueHead[lane] == queueTail[lane])
-	 queueHead[lane] = queueTail[lane] = -1;
+        currentFieldQueue[0][queueHead[lane]] = -1;
+        currentFieldQueue[1][queueHead[lane]] = -1;
+        queueHead[lane]++;
+        if(queueHead[lane] == queueTail[lane]){
+	        queueHead[lane] = queueTail[lane] = -1;
+        }
    }
 }
 
@@ -89,6 +93,7 @@ void initializeFieldQueue(){
     queueHead[1] = -1;
     queueTail[0] = -1;
     queueTail[1] = -1;
+    obstCount = 0;
 }
 
 void moveObsticles(uint8_t switchState){
@@ -98,7 +103,7 @@ void moveObsticles(uint8_t switchState){
 
     cicamica++;
     if(cicamica%6==0) {if(switchState) {cica=-1;}else{ cica=1;}}
-    for (i = 0; i < 1/*queueMaxSize*/; i++){
+    for (i = 0; i < queueMaxSize; i++){
         switch(currentFieldQueue[0][i]){
             case 1:
                 change_sprite_by_vector(16, 20, &obsticlePositionX[0][i], &obsticlePositionY[i], cica, -1);
@@ -126,7 +131,7 @@ void moveObsticles(uint8_t switchState){
 
 void drawObsticles(uint8_t switchState){
     int i;
-    for (i = 0; i < 1/*queueMaxSize*/; i++){
+    for (i = 0; i < queueMaxSize; i++){
         
         int xOffset = switchState * (((obsticlePositionY[i])+210)/18);
         switch(currentFieldQueue[0][i]){
@@ -156,9 +161,8 @@ void drawObsticles(uint8_t switchState){
 
 //function to assign obsticles to the game field
 void fieldGeneration() {
-    int i;
-    for (i = 0; i < queueMaxSize;i++){ // while(currentFieldQueue[0][4]==0xffff){
-        if(currentFieldQueue[0][i]==0xffff){
+    //for (i = 0; i < queueMaxSize;i++){ // while(currentFieldQueue[0][4]==0xffff){
+        if(currentFieldQueue[0][obstCount]==0xffff){
             int randValue =rand();
             int randLeft = randValue&0xff;
             int randRight = (randValue&0xfff00)>>8;
@@ -206,10 +210,14 @@ void fieldGeneration() {
                     }
                 }
             }
-        }else if(obsticlePositionY[i]<0){
+        }else if(obsticlePositionY[obstCount] <0 ){
             dequeue(0);
             dequeue(1);
         }
+    //}
+    obstCount++;
+    if(obstCount>queueMaxSize){
+        obstCount = 0;
     }
 }
 

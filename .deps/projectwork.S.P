@@ -1,0 +1,2 @@
+projectwork.S.o: projectwork.S
+projectwork.S :
