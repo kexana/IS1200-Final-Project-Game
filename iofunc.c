@@ -2,10 +2,10 @@
 #include <pic32mx.h>
 #include "projecthead.h"  /* Declatations for the project */
 
-int getsw(void);
+uint8_t getsw(void);
 int getbtns(void);
 
-int getsw(){
+uint8_t getsw(){
 
     return 0x00000000 | (((PORTD & 0x00000800) >> 11) &0b1); //only gets switch 4
 }

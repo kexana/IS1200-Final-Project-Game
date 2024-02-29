@@ -44,7 +44,7 @@ extern const uint8_t const train[7*16];
 
 /* Written as part of i/o: getbtns, getsw, enable_interrupt */
 int getbtns(void);
-int getsw(void);
+uint8_t getsw(void);
 void enable_interrupt(void);
 
 
@@ -121,6 +121,7 @@ void menu(void);
 void game(void);
 void multiplayermenu(void);
 void highscores(void);
+void gameOver(int score);
 
 //function to randomly generate the game obsticles
 void fieldGeneration(void);
@@ -131,12 +132,15 @@ extern inline void srand(int x);
 /*contains the current obsticles to be put in game
 encoding: LS 2 Bits : 0 - empty space, 01 - tall barrier, 01- short barrier, 11 - train 
 MS 14 bits are MS 7 bits obsticle position x, next 7 bits obsticle position y*/
-uint16_t currentFieldQueue[2][4];
+int currentFieldQueue[2][4];
+
+extern char timeToGen;
 
 //sets initial valuse to the currentFieldQueue
 void initializeFieldQueue(void);
 
 void moveObsticles(uint8_t switchState);
+void applyMoveObsticles(uint8_t swichState);
 void drawObsticles(uint8_t switchState);
 
 //asdasasdssa
@@ -144,3 +148,22 @@ extern const uint8_t const cub1[];
 extern const uint8_t const cub2[];
 
 extern char cicamica;
+
+/*when 0, no collision, otherwise 1 - collision with obstacle; 2 - collision with coin*/
+extern char collisionflag;
+/*0 - running, 1 - jumping, 2 - rolling, 3 - switching to other side*/
+extern char invincibilitystate;
+
+
+void highscoreinit( void );
+char scorekeepername[9][5];
+int scorekeeppoint[9];
+void highscoreinit( void );
+void appendhighscore(int score, char name[4]);
+void displayhighscore( void );
+/*when player dies wait two frames then take in a new highscore, then wait until he presses select button, then exit to main*/
+void takehighscore( int newscore );
+
+extern uint8_t newFrameFlag;
+extern uint8_t buttonmap;
+

@@ -20,7 +20,11 @@ int playerPositionYbuffer = 9;
 uint8_t buttonmap = 0;
 uint8_t buttonFlag = 0;
 uint8_t inputbuffer = 0; // 0000 0000, MSB = sw 4, LS 3 bits = btn 2 trhough 4;
-char sw4 = 0;
+uint8_t sw4 = 0;
+
+char collisionflag = 0;
+int collisionBuffer = 0;
+char invincibilitystate = 0;
 
 void playerMovement(int action){
 	switch (action)
@@ -49,10 +53,12 @@ void playerMovement(int action){
 		case 5:
 			playerPositionYbuffer-=5;
 			//change_sprite_by_vector(16, 24, &playerPositionX, &playerPositionY, 0, -5);
+			//playerPositionXbuffer-=1;
 			break;
 		case 6:
 			playerPositionYbuffer-=10;
 			//change_sprite_by_vector(16, 24, &playerPositionX, &playerPositionY, 0, -10);
+			//playerPositionXbuffer-=1;
 			break;
 		}
 		break;
@@ -72,12 +78,13 @@ void user_isr( void )
 	 	
 		//if (timeoutcount%2 == 0){ //for debugging, halving, or even dividing by three the framerate
 			display_upgrade();
-			newFrameFlag = 1;
+			newFrameFlag = 2;
 			int i;
 			for (i = 0; i < 4; i++){
 				if(animframe[i] != 0){
 					animframe[i]++;
 					playerMovement(i);
+					moveObsticles(sw4);
 				}
 			}
 
@@ -95,9 +102,9 @@ void user_isr( void )
 				// here we used to tick a time by one second
 			}
 
-			if(timer%spawnFrequency == 0){
+			/*if(timer%spawnFrequency == 0){
 				spawnflag = 1;
-			}
+			}*/
 
 	}else if(IFS(0) & 0x0800){
 		IFSCLR(0) = 0x0800;
@@ -140,7 +147,7 @@ void gameinit( void )
 	CNENSET = 0x200;*/
 
 	TRISDSET = 0b1 << 10;
-
+	highscoreinit();
 	enable_interrupt();
 }
 
@@ -150,6 +157,7 @@ void projectwork( void ) {
 	if(gamestate == 1) game();
 	if(gamestate == 2) multiplayermenu();
 	if(gamestate == 8) highscores();
+	if(gamestate == 3) gameOver(timer);
 }
 
 void menu( void ){
@@ -214,6 +222,7 @@ void menu( void ){
 void transitionBackground(){
 	switch(animframe[0]){
 		case 1:
+			invincibilitystate = 3;
 			//display_sprite(32, 90, bg1, 0, 0, ~sw4<<8);
 			display_background(bg1, ~sw4<<8);
 			break;
@@ -233,6 +242,7 @@ void transitionBackground(){
 			//display_sprite(32, 90, bg1, 0, 0, sw4<<8);
 			display_background(bg1, sw4<<8);
 			animframe[0] = 0;
+			invincibilitystate = 0;
 			break;
 	}
 }
@@ -247,6 +257,7 @@ void characterRun(int posX, int posY){
 		case 2:
 			//display_sprite(16, 24, chrRun[1], posX, posY, 0x000);
 			display_player(chrRun[1], posX, posY, 0x000);
+			invincibilitystate = 0;
 			break;
 		case 3:
 			//display_sprite(16, 24, chrRun[1], posX, posY, 0x100);
@@ -274,21 +285,18 @@ void characterRun(int posX, int posY){
 void characterJump(int posX, int posY){
 	switch(animframe[2]){
 		case 1:
-			//display_sprite(16, 24, chrJump[0], posX, posY, 0x000);
 			display_player(chrJump[0], posX, posY, 0x000);
+			invincibilitystate = 1;
 			break;
 		case 2:
 		case 3:
 		case 4:
-			//display_sprite(16, 24, chrJump[1], posX, posY, 0x000);
 			display_player(chrJump[1], posX, posY, 0x000);
 			break;
 		case 5:
-			//display_sprite(16, 24, chrJump[2], posX, posY, 0x000);
 			display_player(chrRun[2], posX, posY, 0x000);
 			break;
 		case 6:
-			//display_sprite(16, 24, chrJump[3], posX, posY, 0x000);
 			display_player(chrRun[3], posX, posY, 0x000);
 			break;
 		case 7:
@@ -305,6 +313,7 @@ void characterRoll(int posX, int posY){
 		case 1:
 			//display_sprite(16, 24, chrRoll[0], posX, posY, 0x000);
 			display_player(chrRoll[0], posX, posY, 0x000);
+			invincibilitystate = 2;
 			break;
 		case 2:
 			//display_sprite(16, 24, chrRoll[1], posX, posY, 0x000);
@@ -344,6 +353,8 @@ void game( void ){
 	T1CONCLR = 0x8000; // disable timer 1;
 	initializeFieldQueue();
 
+	timer = 0;
+
 	display_clear();
 	buttonmap = 0;
 
@@ -370,7 +381,7 @@ void game( void ){
 
 	//character run begin 
 	animframe[1] = 1;
-
+	collisionflag = 0;
 	while(1){
 		
 		if(gamestate != 1) return;
@@ -393,16 +404,20 @@ void game( void ){
 			}
 		}
 
-		if(playerPositionX!=playerPositionXbuffer){
+		/*if(playerPositionX!=playerPositionXbuffer){
 			//This technically should not matter, since we are upgrading the background anyways
-			//change_sprite_by_vector(16, 24, &playerPositionX, &playerPositionY, playerPositionXbuffer-playerPositionX, 0);
+			change_sprite_by_vector(16, 24, &playerPositionX, &playerPositionY, playerPositionXbuffer-playerPositionX, 0);
+			playerPositionX = playerPositionXbuffer;
+		}*/
+
+		if((playerPositionY!=playerPositionYbuffer) || (playerPositionX!=playerPositionXbuffer)){
+	
+			change_sprite_by_vector(16, 24, &playerPositionX, &playerPositionY, playerPositionXbuffer-playerPositionX, playerPositionYbuffer-playerPositionY);
+			playerPositionY = playerPositionYbuffer;
 			playerPositionX = playerPositionXbuffer;
 		}
 
-		if(playerPositionY!=playerPositionYbuffer){
-			change_sprite_by_vector(16, 24, &playerPositionX, &playerPositionY, 0, playerPositionYbuffer-playerPositionY);
-			playerPositionY = playerPositionYbuffer;
-		}
+		applyMoveObsticles(sw4);
 
 		if(animframe[0]){
 			transitionBackground();
@@ -416,26 +431,37 @@ void game( void ){
 		if(animframe[1]){
 			characterRun(playerPositionX, playerPositionY);
 		}
+		
+		if(newFrameFlag){
 
+			drawObsticles(sw4);
+
+			if(collisionflag==1 && collisionBuffer==0){
+				collisionBuffer=1;
+			}
+
+			if(collisionBuffer!=0){
+				if(collisionflag == 1 && invincibilitystate==0){
+					collisionBuffer++;
+					if(collisionBuffer>16){
+						gamestate = 3;
+					}
+				}else{
+					collisionBuffer = 0;
+				}
+			}
+			
+			newFrameFlag = 0;
+		}
 
 		display_smallNums(7, timer);
+		//display_smallNums(12, collisionflag);
+		//display_smallNums(17, invincibilitystate);
 		
 		if (buttonmap == 0b001)  //means select
 		{
 			gamestate = 0;
 			buttonmap = 0;
-		}
-
-		if(newFrameFlag){
-			moveObsticles(sw4);
-			drawObsticles(sw4);
-			
-			newFrameFlag = 0;
-		}
-
-		if(spawnflag){
-			fieldGeneration();
-			spawnflag = 0;
 		}
 	}
 	
@@ -445,6 +471,7 @@ void multiplayermenu( void ){
 	gamestate = 0;
 	return;
 }
+char arrow[2][5];
 
 void highscores( void ){
 	display_clear();
@@ -452,26 +479,49 @@ void highscores( void ){
 	
 	//testing here
 
-	display_sprite(8, 5, coin, 32-8, 100, 0);
+	/*display_sprite(8, 5, coin, 32-8, 100, 0);
 	display_sprite(24, 28, train, 0, 0, 0);
 	display_sprite(16, 12, shortBarrier, 0, 30, 0);
-	display_sprite(16, 20, tallBarrier, 10, 50, 0);
+	display_sprite(16, 20, tallBarrier, 10, 50, 0);*/
 	
+	//appendhighscore(300, "BEN");
+	//appendhighscore(200, "ABA");
+
 	display_upgrade();
-	
+	//displayhighscore();
 
-
+	//takehighscore(timer);
+	display_clear();
+	displayhighscore();
+	gamestate=8;
 	while(1){
 		if(gamestate != 8) return;
-		//display_string(5, " hS", 0);
-		
-		display_smallNums(1, timer);
-		
-		if (buttonmap == 0b001)  //means select
+		//displayhighscore();
+		if (buttonmap==0b001)  //means select
 		{
 			gamestate = 0;
 			buttonmap = 0;
 		}
 	}
-	
+}
+
+void gameOver(int score){
+	display_clear();
+	buttonmap = 0;
+	display_sprite(32, 36, gui, 0, 92, 0);
+	display_smallNums(7, score);
+	display_string(10, "Game",0);
+	display_string(11, "Over",0);
+	//takehighscore(score);
+
+	while (1)
+	{
+		if(gamestate != 3) return;
+		if (buttonmap == 0b001)  //means select
+		{
+			takehighscore(score);
+			gamestate = 0;
+			buttonmap = 0;
+		}
+	}
 }

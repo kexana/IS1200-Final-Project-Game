@@ -112,7 +112,7 @@ void display_smallNums(int line, int num){
 	int numtoprint;
 	int divisor = 100000;
 
-	char zerosFlag = 0; //set this flag to 1 before the loop to display leading zeroes
+	char zerosFlag = 1; //set this flag to 1 before the loop to display leading zeroes
 
 	line = 127 - line;
 	for(i = 0; i < 6; i++){ // number of characters per line
@@ -240,6 +240,112 @@ void change_sprite_by_vector(int xSize, int ySize, int *x, int *y, int vectorX, 
 	// shall display the old background once again
 
 	int canvasx; int canvasy;
+	/*if(vectorX>0){
+		if(vectorY>0){ //both ++
+			for(i=0; i<vectorX; i++){
+				canvasx = i+*x;
+				if(canvasx<0 || canvasx>31) continue;
+
+				for(j=0; j<ySize; j++){
+					canvasy = j+*y;
+					if(canvasy<0 || canvasy>127) continue;
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				}
+			}
+
+			for(i=0; i<xSize; i++){
+				canvasx = i+*x;
+				if(canvasx<0 || canvasx>31) continue;
+
+				for(j=0; j<vectorY; j++){
+					canvasy = j+*y;
+					if(canvasy<0 || canvasy>127) continue;
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				}
+			}
+		}else{ //x is +; y is -
+			for(i=0; i<vectorX; i++){
+				canvasx = i+*x;
+				if(canvasx<0 || canvasx>31) continue;
+
+				for(j=0; j<ySize; j++){
+					canvasy = j+*y;
+					if(canvasy<0 || canvasy>127) continue;
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				}
+			}
+
+			for(i=0; i<xSize; i++){
+				canvasx = i+*x;
+				if(canvasx<0 || canvasx>31) continue;
+				
+				for(j=0; j>=vectorY; j--){ //note the >= (idk why, idk maths ¯\_(ツ)_/¯)
+					canvasy = j+*y+ySize;
+					if(canvasy<0 || canvasy>127) continue;
+
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+						
+				}
+			}
+		}
+	}else{
+		if(vectorY>0){ //x is -; y is +
+			for(i=0; i>=vectorX; i--){
+				canvasx = i+*x+xSize;
+				if(canvasx<0 || canvasx>31) continue;
+
+				for(j=0; j<ySize; j++){
+					canvasy = j+*y;
+					if(canvasy<0 || canvasy>127) continue;
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+
+				}
+			}
+			for(i=0; i<xSize; i++){
+				canvasx = i+*x+xSize;
+				if(canvasx<0 || canvasx>31) continue;
+
+				for(j=0; j<vectorY; j++){
+					canvasy = j+*y;
+					if(canvasy<0 || canvasy>127) continue;
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				}
+			}
+		}else{ //both -
+			for(i=0; i>=vectorX; i--){
+				canvasx = i+*x+xSize;
+				if(canvasx<0 || canvasx>31) continue;
+
+				for(j=0; j>=vectorY; j--){ //note the >= (idk why, idk maths ¯\_(ツ)_/¯)
+					canvasy = j+*y+ySize;
+					if(canvasy<0 || canvasy>127) continue;
+
+
+					canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+						
+				}
+			}
+		}
+	}*/
+
+	/*for(i = 0; i<xSize; i++){
+		canvasx = i+*x;
+		if((canvasx<0) || (canvasx>31)) continue;
+		for(j = 0; j<ySize; j++){
+			canvasy = j+*y;
+			if((canvasy<0) || (canvasy>127)) continue;
+
+			canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+		}
+	}*/
+
+	//jooo
 	if(vectorX>0){
 		for(i=0; i<vectorX; i++){
 			canvasx = i+*x;
@@ -249,11 +355,11 @@ void change_sprite_by_vector(int xSize, int ySize, int *x, int *y, int vectorX, 
 				canvasy = j+*y;
 				if(canvasy<0 || canvasy>127) continue;
 
-				canvas[canvasx][canvasy] = canvas[canvasx][canvasy] & 0xfa | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
 			}
 		}
 	}else{
-		for(i=0; i>vectorX; i--){
+		for(i=0; i>=vectorX; i--){
 			canvasx = i+*x+xSize;
 			if(canvasx<0 || canvasx>31) continue;
 
@@ -261,7 +367,7 @@ void change_sprite_by_vector(int xSize, int ySize, int *x, int *y, int vectorX, 
 				canvasy = j+*y;
 				if(canvasy<0 || canvasy>127) continue;
 
-				canvas[canvasx][canvasy] = canvas[canvasx][canvasy] & 0xfa | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
 
 			}
 		}
@@ -285,18 +391,78 @@ void change_sprite_by_vector(int xSize, int ySize, int *x, int *y, int vectorX, 
 			if(canvasx<0 || canvasx>31) continue;
 
 			for(j=0; j>=vectorY; j--){ //note the >= (idk why, idk maths ¯\_(ツ)_/¯)
-				canvasy = j+*y+ySize;
+				canvasy = j+(*y)+ySize;
 				if(canvasy<0 || canvasy>127) continue;
 
-				canvas[canvasx][canvasy] = canvas[canvasx][canvasy] & 0xfa | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
 
 			}
 		}
 	}
+		
+	/*}else{
+		if(vectorY>0){
+
+		}else{
+
+		}
+		for(i=0; i>vectorX; i--){
+			canvasx = i+*x+xSize;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j<ySize; j++){
+				canvasy = j+*y;
+				if(canvasy<0 || canvasy>127) continue;
+
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+
+			}
+		}
+	}
+		
+	if(vectorY>0){
+		for(i=0; i<=xSize; i++){
+			canvasx = i+*x;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j<=vectorY; j++){
+				canvasy = j+*y;
+				if(canvasy<0 || canvasy>127) continue;
+
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				
+			}
+		}
+	}else{
+		for(i=0; i<=xSize; i++){
+			canvasx = i+*x;
+			if(canvasx<0 || canvasx>31) continue;
+
+			for(j=0; j>=vectorY; j--){ //note the >= (idk why, idk maths ¯\_(ツ)_/¯)
+				canvasy = j+*y+ySize;
+				if(canvasy<0 || canvasy>127) continue;
+
+
+				canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x82 | (0b0000 << 3) | (canvas[canvasx][canvasy]<<1)&0b100 | (canvas[canvasx][canvasy]>>1)&0b1;
+				
+			}
+		}
+	}*/
 
 	*x +=vectorX; 
 	*y +=vectorY;
 
+}
+
+/*helper function for display_player to check invincibility states*/
+int collisionhandler( char spritetype ){
+	/*rember 00 - bg; 01 - coin; 02 - train; 03 - shortBarrier; 04 - tallBarrier*/
+	int value = 1;
+	if(invincibilitystate == 3) value= 0; //we are switching side, we dont want collision
+	if(spritetype == 1) value= 2; //just a coin
+	if((invincibilitystate == 1) && (spritetype == 3)) value= 0; //we hit a short barrier, but we are jumping
+	if((invincibilitystate == 2) && (spritetype == 4)) value= 0; //we hit a tall barrier, but we are rolling
+	return value;
 }
 
 /*PLEASE TAKE NOTE OF CANVAS BIT LAYOUT (a canvas[x][y] is 1 char, that is 8 bits)
@@ -328,6 +494,7 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 
 	char flagLeft;
 	char flagRight;
+	char foundCollisionyet = 0;
 	
 	//info 16bit int, least 8 bits are for the canvas information (that is the 7 bits above the lowest)
 	//the other 8 are for flipping x or y axis; bit N.o. 8 is flip around y axis ((inf >> 7) & 0b1)
@@ -377,7 +544,13 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 					/*if(flagLeft) canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b10 | temp & 0b1 | (inf & 0xfc);//PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
 					if(flagLeft) temp = temp >> 1;*/
 
-					if((k>=locL) && (k<=locR)) canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b110 | localizer & 0b1 | (inf & 0xf8); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					if((k>=locL) && (k<=locR)) {
+						if(!foundCollisionyet && ((canvas[canvasx][canvasy]&0x78)>>3)){
+							collisionflag = collisionhandler((canvas[canvasx][canvasy]&0x78)>>3);
+							foundCollisionyet = 1;
+							}
+						canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b110 | localizer & 0b1 | (inf & 0xf8); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					}
 					else canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x7e | (canvas[canvasx][canvasy]&0b100) >>2;
 					localizer = localizer >> 1;
 
@@ -424,7 +597,13 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 						}
 						flagLeft = 1;
 					}*/
-					if((k>=locL) && (k<=locR)) canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b110 | localizer & 0b1 | (inf & 0xf8); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					if((k>=locL) && (k<=locR)){
+						if(!foundCollisionyet && ((canvas[canvasx][canvasy]&0x78)>>3)){
+							collisionflag = collisionhandler((canvas[canvasx][canvasy]&0x78)>>3);
+							foundCollisionyet = 1;
+						}
+						canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0b110 | localizer & 0b1 | (inf & 0xf8); //PAY ATTENTION TO INDEX OUT OF BOUNDS, IT WILL BREAK THE GAME
+					}
 					else canvas[canvasx][canvasy] = canvas[canvasx][canvasy]&0x7e | (canvas[canvasx][canvasy]&0b100) >>2;
 					localizer = localizer >> 1;
 				}
