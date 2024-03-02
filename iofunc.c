@@ -7,7 +7,9 @@ int getbtns(void);
 
 uint8_t getsw(){
 
-    return 0x00000000 | (((PORTD & 0x00000800) >> 11) &0b1); //only gets switch 4
+    int res = 0x00000000 | (((PORTD & 0x00000800) >> 11) &0b1);   
+    calculateFlipObsticleOffset(res);
+    return res; // only gets switch 4
 }
 
 int getbtns(){

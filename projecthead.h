@@ -109,6 +109,8 @@ LSB 7:      Player bit - this is essentially player hitbox, its the cutout playe
 (remember LSB 7 is the same as MSB 0, the largest bit in a char)*/
 extern char canvas[32][128];
 
+extern const uint8_t const titleScreen[128*4];
+
 /*useful 8bit number keeping track of the state of the program
 
 state 1: uhhh
@@ -142,6 +144,7 @@ void initializeFieldQueue(void);
 void moveObsticles(uint8_t switchState);
 void applyMoveObsticles(uint8_t swichState);
 void drawObsticles(uint8_t switchState);
+void calculateFlipObsticleOffset(uint8_t switchState);
 
 //asdasasdssa
 extern const uint8_t const cub1[];
@@ -167,3 +170,4 @@ void takehighscore( int newscore );
 extern uint8_t newFrameFlag;
 extern uint8_t buttonmap;
 
+extern int obstaclegeneratorIndex;

@@ -169,11 +169,21 @@ void menu( void ){
 	char txtSelect[menuOptions];	//
 	
 	display_clear();
-	timeoutcount=0;
+    timeoutcount=0;
 
-	while(1){
-		if(gamestate != 0) return;
-		int j=0;
+    char titlescreen =1;
+
+    while(1){
+        if(gamestate != 0) return;
+        if(titlescreen){
+            display_sprite(32, 128, titleScreen, 0, 0, 0);
+            if(buttonmap == 0b001){
+                titlescreen = 0;
+				display_clear();
+                buttonmap = 0;
+            }
+            continue;
+        }		int j=0;
 		for(j = 0; j<menuOptions; j++){
 			if(j == selector) txtSelect[j] = 0xf;
 			else txtSelect[j] = 0x0;
@@ -207,13 +217,13 @@ void menu( void ){
 		 char z[2] = {sw4+48, 0};
 
 		 display_string(3, "PLAY", 0);
-		 display_string(0, z, 0);
+		 //display_string(0, z, 0);
 		 display_string(4, " 1p ", txtSelect[0]);
 		 display_string(5, " 2p ", txtSelect[1]);
 		 display_string(8, "Hall", txtSelect[2]);
 		 display_string(9, " of ", txtSelect[2]); 
 		 display_string(10, "fame", txtSelect[2]);
-		 display_smallNums(123, timer);
+		 //display_smallNums(123, timer);
 	}
 }
 
@@ -382,7 +392,19 @@ void game( void ){
 	//character run begin 
 	animframe[1] = 1;
 	collisionflag = 0;
+	int difficultyBracketNum = 10;
+    int increasedifficultyFrameCounter = 0;
+    obstaclegeneratorIndex = 0;
 	while(1){
+		if(newFrameFlag){
+            increasedifficultyFrameCounter++;
+            if(increasedifficultyFrameCounter == difficultyBracketNum){
+                increasedifficultyFrameCounter = 0;
+                difficultyBracketNum = difficultyBracketNum*2-difficultyBracketNum/2;
+                if(obstaclegeneratorIndex<10) obstaclegeneratorIndex++;
+
+            }
+        }
 		
 		if(gamestate != 1) return;
 
@@ -519,6 +541,10 @@ void gameOver(int score){
 		if(gamestate != 3) return;
 		if (buttonmap == 0b001)  //means select
 		{
+			display_clear();
+			display_sprite(32, 36, gui, 0, 92, 0);
+			display_smallNums(7, score);
+
 			takehighscore(score);
 			gamestate = 0;
 			buttonmap = 0;

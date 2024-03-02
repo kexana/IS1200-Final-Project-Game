@@ -21,6 +21,8 @@ char cicamica = 0;
 
 char timeToGen = 15;
 
+int flipXOffset[4];
+
 //this is a pointer to the location of where we want to generate a new obstacle
 int obstaclegeneratorIndex = 0;
 
@@ -76,6 +78,7 @@ inline void srand(int x)
 #define RAND_MAX ((1U << 31) - 1)
 
 // Linear congruantial Generator borrowed form Rosseta Code article on related topic
+// https://rosettacode.org/wiki/Linear_congruential_generator?section=42#C
 inline int rand()
 {
 	return rseed = (rseed * 1103515245 + 12345) & RAND_MAX;
@@ -111,6 +114,13 @@ void initializeFieldQueue(){
     fieldGeneration(); //lets gen one starter why not
 }
 
+void calculateFlipObsticleOffset(uint8_t switchState){
+    int i;
+    for (i = 0; i < queueMaxSize;i++){
+        flipXOffset[i] = switchState*((((obsticlePositionY[i]) - 19) / 16)+16);
+    }
+} 
+
 void moveObsticles(uint8_t switchState){
     int i;
 
@@ -136,11 +146,11 @@ void moveObsticles(uint8_t switchState){
 void applyMoveObsticles(uint8_t switchState){
     int i;
 
-    int xOffset = switchState * (((obsticlePositionY[i])+210)/18); //switchState * ((((-11)*obsticlePositionY[i])+234)/67);
     for (i = 0; i < queueMaxSize; i++){
+        //int xOffset = switchState * (((obsticlePositionY[i])-18)/3); //switchState * ((((-11)*obsticlePositionY[i])+234)/67);
         if((obsticlePositionYBuffer[i] != obsticlePositionY[i]) || (obsticlePositionXBuffer[0][i] != obsticlePositionX[0][i]) || (obsticlePositionXBuffer[1][i] != obsticlePositionX[1][i])){
-            int posx0 = obsticlePositionX[0][i] + xOffset;
-            int posx1 = obsticlePositionX[1][i] + xOffset;
+            int posx0 = obsticlePositionX[0][i] + flipXOffset[i];
+            int posx1 = obsticlePositionX[1][i] + flipXOffset[i];
             switch(currentFieldQueue[0][i]){
                 case 0:
                     if(obsticlePositionY[i]+12 < 0) dequeue(0, i);
@@ -186,20 +196,20 @@ void drawObsticles(uint8_t switchState){
     int i;
     for (i = 0; i < queueMaxSize; i++){
 
-        int xOffset = switchState * (((obsticlePositionY[i])+210)/18);
+        //int xOffset = switchState * (((obsticlePositionY[i])-18)/3);
         switch(currentFieldQueue[0][i]){
             case -1:
                 break;
             case 0:
                 break;
 			case 1:
-				display_sprite(16, 20, tallBarrier, (obsticlePositionX[0][i] + xOffset), obsticlePositionY[i], 0x20);
+				display_sprite(16, 20, tallBarrier, (obsticlePositionX[0][i] + flipXOffset[i]), obsticlePositionY[i], 0x20);
 				break;
 			case 2:
-				display_sprite(16, 12, shortBarrier, (obsticlePositionX[0][i] + xOffset), obsticlePositionY[i], 0x18);
+				display_sprite(16, 12, shortBarrier, (obsticlePositionX[0][i] + flipXOffset[i]), obsticlePositionY[i], 0x18);
 				break;
 			case 3:
-				display_sprite(24, 28, train, (obsticlePositionX[0][i] -4 + xOffset), obsticlePositionY[i], switchState<<8 | 0x10);
+				display_sprite(24, 28, train, (obsticlePositionX[0][i] -4 + flipXOffset[i]), obsticlePositionY[i], switchState<<8 | 0x10);
 				break;
 		}
 		switch(currentFieldQueue[1][i]){
@@ -208,13 +218,13 @@ void drawObsticles(uint8_t switchState){
             case 0:
                 break;
 			case 1:
-				display_sprite(16, 20, tallBarrier, (obsticlePositionX[1][i] + xOffset), obsticlePositionY[i], 0x20);
+				display_sprite(16, 20, tallBarrier, (obsticlePositionX[1][i] + flipXOffset[i]), obsticlePositionY[i], 0x20);
 				break;
 			case 2:
-				display_sprite(16, 12, shortBarrier, (obsticlePositionX[1][i] + xOffset), obsticlePositionY[i], 0x18);
+				display_sprite(16, 12, shortBarrier, (obsticlePositionX[1][i] + flipXOffset[i]), obsticlePositionY[i], 0x18);
 				break;
 			case 3:
-				display_sprite(24, 28, train, (obsticlePositionX[1][i] -4 + xOffset), obsticlePositionY[i], switchState<<8 | 0x10);
+				display_sprite(24, 28, train, (obsticlePositionX[1][i] -4 + flipXOffset[i]), obsticlePositionY[i], switchState<<8 | 0x10);
 				break;
 		}
     }

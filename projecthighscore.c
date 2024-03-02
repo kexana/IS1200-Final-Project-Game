@@ -145,10 +145,13 @@ void takehighscore( int newscore ){
             }
             }
             
-            submitname[kutyaIndex] += kutya;
+            if((submitname[kutyaIndex]<=125 && submitname[kutyaIndex]>=33) || (submitname[kutyaIndex]==126 && kutya == -1) || (submitname[kutyaIndex]==32 && kutya == 1)) submitname[kutyaIndex] += kutya;
             kutya = 0;
-            display_string(3, "NEW ", 0b1110);
-            display_string(4, "BEST", 0);
+            display_string(6, "YOU", 0b0);
+            display_string(7, " ARE", 0);
+            display_string(8, "IN ", 0);
+            display_string(9, " THE", 0);
+            display_string(10, "TOP", 0b1110);
             char highlighter=0;
             switch (kutyaIndex)
             {
@@ -166,7 +169,7 @@ void takehighscore( int newscore ){
                 highlighter=0b0001;
                 break;
             }
-            display_string(5, submitname, highlighter);
+            display_string(12, submitname, highlighter);
         }
         
         

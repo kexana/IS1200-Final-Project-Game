@@ -545,7 +545,7 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 					if(flagLeft) temp = temp >> 1;*/
 
 					if((k>=locL) && (k<=locR)) {
-						if(!foundCollisionyet && ((canvas[canvasx][canvasy]&0x78)>>3)){
+						if((i>=(ySize-5))&&(!foundCollisionyet && ((canvas[canvasx][canvasy]&0x78)>>3))){
 							collisionflag = collisionhandler((canvas[canvasx][canvasy]&0x78)>>3);
 							foundCollisionyet = 1;
 							}
@@ -598,7 +598,7 @@ void display_player(const uint8_t pxlarray[], int xPos, int yPos, short inf){
 						flagLeft = 1;
 					}*/
 					if((k>=locL) && (k<=locR)){
-						if(!foundCollisionyet && ((canvas[canvasx][canvasy]&0x78)>>3)){
+						if((i>=(ySize-5))&&(!foundCollisionyet && ((canvas[canvasx][canvasy]&0x78)>>3))){
 							collisionflag = collisionhandler((canvas[canvasx][canvasy]&0x78)>>3);
 							foundCollisionyet = 1;
 						}
